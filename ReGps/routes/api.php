@@ -48,6 +48,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('ubicaciones/{id}', [UbicacionController::class, 'show']);
         Route::put('ubicaciones/{id}', [UbicacionController::class, 'update']);
         Route::delete('ubicaciones/{id}', [UbicacionController::class, 'destroy']);
+        
+        // Endpoints adicionales para el frontend
+        Route::get('locations/current', [UbicacionController::class, 'getCurrentLocations']);
+        Route::get('locations/history', [UbicacionController::class, 'getHistory']);
     });
     
     // Zonas (Solo Administrador puede crear/editar/eliminar)

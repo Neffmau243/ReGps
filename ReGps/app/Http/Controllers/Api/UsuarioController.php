@@ -35,7 +35,16 @@ class UsuarioController extends Controller
         $validated['Contraseña'] = Hash::make($validated['Contraseña']);
         $usuario = Usuario::create($validated);
         
-        return response()->json($usuario, 201);
+        // Crear automáticamente el registro en empleados para TODOS los usuarios
+        // Esto permite que cualquier usuario (Admin o Empleado) pueda tener dispositivos asignados
+        \App\Models\Empleado::create([
+            'UsuarioID' => $usuario->UsuarioID,
+            'Nombre' => $validated['Nombre'],
+            'Apellido' => '', // Vacío por defecto, se puede editar después
+            'Estado' => 'Activo'
+        ]);
+        
+        return response()->json($usuario->load('empleado'), 201);
     }
 
     /**

@@ -25,12 +25,16 @@ class DispositivoController extends Controller
     {
         $validated = $request->validate([
             'EmpleadoID' => 'nullable|exists:empleados,EmpleadoID',
-            'IMEI' => 'required|string|unique:dispositivos,IMEI',
-            'Modelo' => 'nullable|string|max:100',
+            'IMEI' => 'required|string|unique:dispositivos,IMEI|min:10|max:20',
+            'Modelo' => 'required|string|max:100',
             'Marca' => 'nullable|string|max:100',
-            'Estado' => 'in:Activo,Inactivo,Mantenimiento',
+            'Estado' => 'nullable|in:Activo,Inactivo,Mantenimiento',
             'FechaAsignacion' => 'nullable|date'
         ]);
+
+        // Valores por defecto
+        $validated['Estado'] = $validated['Estado'] ?? 'Activo';
+        $validated['FechaAsignacion'] = $validated['FechaAsignacion'] ?? now();
 
         $dispositivo = Dispositivo::create($validated);
         return response()->json($dispositivo, 201);
