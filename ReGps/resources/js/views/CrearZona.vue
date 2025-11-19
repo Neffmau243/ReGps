@@ -242,8 +242,8 @@ const drawCircle = () => {
   
   currentShape = L.circle([form.value.Latitud, form.value.Longitud], {
     radius: form.value.Radio,
-    color: '#0066FF',
-    fillColor: '#0066FF',
+    color: '#FF6B35',
+    fillColor: '#FF6B35',
     fillOpacity: 0.2
   }).addTo(map!)
   
@@ -257,8 +257,8 @@ const drawPolygon = () => {
   
   if (polygonPoints.length > 0) {
     currentShape = L.polygon(polygonPoints, {
-      color: '#0066FF',
-      fillColor: '#0066FF',
+      color: '#FF6B35',
+      fillColor: '#FF6B35',
       fillOpacity: 0.2
     }).addTo(map!)
     
@@ -281,6 +281,19 @@ const loadZone = async () => {
     const response = await api.get(`/zonas/${route.params.id}`)
     const zona = response.data
     
+    // Helper function to safely parse JSON
+    const parseIfString = (value: any) => {
+      if (!value) return null
+      if (typeof value === 'string') {
+        try {
+          return JSON.parse(value)
+        } catch (e) {
+          return null
+        }
+      }
+      return value // Already an object
+    }
+    
     form.value = {
       Nombre: zona.Nombre,
       TipoZona: zona.TipoZona,
@@ -288,7 +301,7 @@ const loadZone = async () => {
       Latitud: zona.Latitud,
       Longitud: zona.Longitud,
       Radio: zona.Radio || 500,
-      Coordenadas: zona.Coordenadas ? JSON.parse(zona.Coordenadas) : null,
+      Coordenadas: parseIfString(zona.Coordenadas),
       HorarioInicio: zona.HorarioInicio || '',
       HorarioFin: zona.HorarioFin || '',
       Descripcion: zona.Descripcion || '',
@@ -299,8 +312,11 @@ const loadZone = async () => {
     if (zona.TipoGeometria === 'Circulo') {
       drawCircle()
     } else if (zona.TipoGeometria === 'Poligono' && zona.Coordenadas) {
-      polygonPoints = JSON.parse(zona.Coordenadas).map((c: any) => L.latLng(c.lat, c.lng))
-      drawPolygon()
+      const coords = parseIfString(zona.Coordenadas)
+      if (coords && Array.isArray(coords)) {
+        polygonPoints = coords.map((c: any) => L.latLng(c.lat, c.lng))
+        drawPolygon()
+      }
     }
     
     map?.setView([zona.Latitud, zona.Longitud], 15)

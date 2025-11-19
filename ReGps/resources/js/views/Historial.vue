@@ -15,7 +15,7 @@
             <select v-model="filters.deviceId" class="input-field">
               <option value="">Seleccionar dispositivo</option>
               <option v-for="device in dispositivos" :key="device.DispositivoID" :value="device.DispositivoID">
-                {{ device.Nombre }}
+                {{ device.Modelo || `Dispositivo ${device.DispositivoID}` }}
               </option>
             </select>
           </div>
@@ -152,7 +152,8 @@ import 'leaflet/dist/leaflet.css'
 
 interface Dispositivo {
   DispositivoID: number
-  Nombre: string
+  Modelo?: string
+  IMEI: string
 }
 
 const dispositivos = ref<Dispositivo[]>([])
@@ -227,7 +228,7 @@ const drawRoute = () => {
   
   // Draw route line
   const latlngs = locations.map((loc: any) => [loc.latitude, loc.longitude])
-  L.polyline(latlngs, { color: '#0066FF', weight: 3 }).addTo(map!)
+  L.polyline(latlngs, { color: '#FF6B35', weight: 3 }).addTo(map!)
   
   // Add start marker
   const startIcon = L.divIcon({

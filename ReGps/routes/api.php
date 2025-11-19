@@ -36,7 +36,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('empleados', EmpleadoController::class);
     });
     
-    // Dispositivos (Solo Administrador)
+    // Dispositivos
+    // Empleados pueden ver solo sus dispositivos asignados
+    Route::get('dispositivos/mis-dispositivos', [DispositivoController::class, 'misDispositivos']);
+    
+    // Solo Administrador tiene acceso completo
     Route::middleware('role:Administrador')->group(function () {
         Route::apiResource('dispositivos', DispositivoController::class);
     });

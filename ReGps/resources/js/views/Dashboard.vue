@@ -105,7 +105,7 @@
                       <p class="text-gray-400 text-sm">{{ device.user_name }}</p>
                       <p class="text-gray-500 text-xs mt-1">
                         <i class="bi bi-clock mr-1"></i>
-                        Hace {{ device.minutes_ago }} min
+                        {{ formatTimeAgo(device.minutes_ago) }}
                       </p>
                     </div>
                   </div>
@@ -265,30 +265,97 @@ const getMarkerColor = (minutesAgo: number) => {
   if (minutesAgo < 15) return 'marker-yellow'
   return 'marker-red'
 }
+
+const formatTimeAgo = (minutes: number): string => {
+  if (minutes < 1) {
+    const seconds = Math.round(minutes * 60)
+    return seconds <= 1 ? 'Justo ahora' : `Hace ${seconds} seg`
+  } else if (minutes < 60) {
+    const mins = Math.round(minutes)
+    return `Hace ${mins} min`
+  } else if (minutes < 1440) { // menos de 24 horas
+    const hours = Math.round(minutes / 60)
+    return `Hace ${hours}h`
+  } else {
+    const days = Math.round(minutes / 1440)
+    return `Hace ${days}d`
+  }
+}
 </script>
 
 <style scoped>
+/* Stat Cards Mejoradas */
 .stat-card {
-  @apply bg-dark-100 rounded-xl p-6 border border-primary/20 hover:border-primary/40 transition-colors;
+  @apply bg-dark-100 rounded-xl p-6 border border-primary/20;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
 }
 
+.stat-card:hover {
+  @apply border-primary/50;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px -5px rgba(255, 107, 53, 0.25), 0 0 15px rgba(255, 107, 53, 0.1);
+}
+
+/* Device Cards Mejoradas */
 .device-card {
-  @apply bg-dark rounded-lg p-3 border border-gray-700 hover:border-primary/50 transition-colors;
+  @apply bg-dark-200 rounded-lg p-4 border border-dark-300;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.device-card:hover {
+  @apply border-primary/40 bg-dark-100;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.15);
+}
+
+.device-card:active {
+  transform: translateX(2px);
+}
+
+/* Custom Markers */
 :deep(.custom-marker) {
-  @apply w-8 h-8 rounded-full flex items-center justify-center text-white text-xl shadow-lg;
+  @apply w-8 h-8 rounded-full flex items-center justify-center text-white text-xl;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4), 0 0 0 3px rgba(255, 255, 255, 0.3);
+  transition: transform 0.2s ease;
+}
+
+:deep(.custom-marker:hover) {
+  transform: scale(1.15);
 }
 
 :deep(.marker-green) {
-  @apply bg-green-500;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
 :deep(.marker-yellow) {
-  @apply bg-yellow-500;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
 }
 
 :deep(.marker-red) {
-  @apply bg-red-500;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* Animación de entrada */
+.stat-card {
+  animation: fadeInUp 0.5s ease-out backwards;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

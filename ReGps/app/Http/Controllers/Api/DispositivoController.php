@@ -78,4 +78,32 @@ class DispositivoController extends Controller
         $dispositivo->delete();
         return response()->json(['message' => 'Dispositivo eliminado correctamente']);
     }
+
+    /**
+     * Obtener los dispositivos asignados al empleado actual.
+     */
+    public function misDispositivos(Request $request): JsonResponse
+    {
+        $usuario = $request->user();
+        
+        // Si es administrador, puede ver todos
+        if ($usuario->Rol === 'Administrador') {
+            $dispositivos = Dispositivo::with('empleado')->get();
+            return response()->json($dispositivos);
+        }
+        
+        // Si es empleado, buscar su EmpleadoID
+        $empleado = \App\Models\Empleado::where('UsuarioID', $usuario->UsuarioID)->first();
+        
+        if (!$empleado) {
+            return response()->json(['message' => 'No se encontró el empleado asociado'], 404);
+        }
+        
+        // Retornar solo los dispositivos asignados a este empleado
+        $dispositivos = Dispositivo::where('EmpleadoID', $empleado->EmpleadoID)
+            ->with('empleado')
+            ->get();
+        
+        return response()->json($dispositivos);
+    }
 }

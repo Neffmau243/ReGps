@@ -11,46 +11,47 @@
       
       <!-- Desktop Navigation -->
       <div class="navbar-menu desktop-menu">
-        <router-link 
-          to="/" 
-          class="nav-link"
-          :class="{ 'active': $route.path === '/' }"
-        >
-          <i class="bi bi-speedometer2"></i>
-          <span>Dashboard</span>
-        </router-link>
-        
-        <router-link 
-          to="/historial" 
-          class="nav-link"
-          :class="{ 'active': $route.path === '/historial' }"
-        >
-          <i class="bi bi-clock-history"></i>
-          <span>Historial</span>
-        </router-link>
-        
-        <router-link 
-          to="/zonas" 
-          class="nav-link"
-          :class="{ 'active': $route.path.startsWith('/zonas') }"
-        >
-          <i class="bi bi-geo-fill"></i>
-          <span>Zonas</span>
-        </router-link>
-        
-        <router-link 
-          to="/alertas" 
-          class="nav-link"
-          :class="{ 'active': $route.path === '/alertas' }"
-        >
-          <i class="bi bi-bell-fill"></i>
-          <span>Alertas</span>
-          <span v-if="alertCount > 0" class="badge-notification">
-            {{ alertCount }}
-          </span>
-        </router-link>
-        
+        <!-- Admin Navigation -->
         <template v-if="authStore.isAdmin">
+          <router-link 
+            to="/" 
+            class="nav-link"
+            :class="{ 'active': $route.path === '/' }"
+          >
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+          </router-link>
+          
+          <router-link 
+            to="/historial" 
+            class="nav-link"
+            :class="{ 'active': $route.path === '/historial' }"
+          >
+            <i class="bi bi-clock-history"></i>
+            <span>Historial</span>
+          </router-link>
+          
+          <router-link 
+            to="/zonas" 
+            class="nav-link"
+            :class="{ 'active': $route.path.startsWith('/zonas') }"
+          >
+            <i class="bi bi-geo-fill"></i>
+            <span>Zonas</span>
+          </router-link>
+          
+          <router-link 
+            to="/alertas" 
+            class="nav-link"
+            :class="{ 'active': $route.path === '/alertas' }"
+          >
+            <i class="bi bi-bell-fill"></i>
+            <span>Alertas</span>
+            <span v-if="alertCount > 0" class="badge-notification">
+              {{ alertCount }}
+            </span>
+          </router-link>
+          
           <router-link 
             to="/usuarios" 
             class="nav-link"
@@ -67,6 +68,18 @@
           >
             <i class="bi bi-phone-fill"></i>
             <span>Dispositivos</span>
+          </router-link>
+        </template>
+        
+        <!-- Employee Navigation -->
+        <template v-else>
+          <router-link 
+            to="/empleado" 
+            class="nav-link"
+            :class="{ 'active': $route.path === '/empleado' }"
+          >
+            <i class="bi bi-house-fill"></i>
+            <span>Mi Panel</span>
           </router-link>
         </template>
       </div>
@@ -119,48 +132,49 @@
           
           <!-- Mobile Navigation -->
           <nav class="mobile-nav">
-            <router-link 
-              to="/" 
-              class="mobile-nav-link"
-              :class="{ 'active': $route.path === '/' }"
-              @click="closeMobileMenu"
-            >
-              <i class="bi bi-speedometer2"></i>
-              <span>Dashboard</span>
-            </router-link>
-            
-            <router-link 
-              to="/historial" 
-              class="mobile-nav-link"
-              :class="{ 'active': $route.path === '/historial' }"
-              @click="closeMobileMenu"
-            >
-              <i class="bi bi-clock-history"></i>
-              <span>Historial</span>
-            </router-link>
-            
-            <router-link 
-              to="/zonas" 
-              class="mobile-nav-link"
-              :class="{ 'active': $route.path.startsWith('/zonas') }"
-              @click="closeMobileMenu"
-            >
-              <i class="bi bi-geo-fill"></i>
-              <span>Zonas</span>
-            </router-link>
-            
-            <router-link 
-              to="/alertas" 
-              class="mobile-nav-link"
-              :class="{ 'active': $route.path === '/alertas' }"
-              @click="closeMobileMenu"
-            >
-              <i class="bi bi-bell-fill"></i>
-              <span>Alertas</span>
-              <span v-if="alertCount > 0" class="badge-notification">{{ alertCount }}</span>
-            </router-link>
-            
+            <!-- Admin Navigation -->
             <template v-if="authStore.isAdmin">
+              <router-link 
+                to="/" 
+                class="mobile-nav-link"
+                :class="{ 'active': $route.path === '/' }"
+                @click="closeMobileMenu"
+              >
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+              </router-link>
+              
+              <router-link 
+                to="/historial" 
+                class="mobile-nav-link"
+                :class="{ 'active': $route.path === '/historial' }"
+                @click="closeMobileMenu"
+              >
+                <i class="bi bi-clock-history"></i>
+                <span>Historial</span>
+              </router-link>
+              
+              <router-link 
+                to="/zonas" 
+                class="mobile-nav-link"
+                :class="{ 'active': $route.path.startsWith('/zonas') }"
+                @click="closeMobileMenu"
+              >
+                <i class="bi bi-geo-fill"></i>
+                <span>Zonas</span>
+              </router-link>
+              
+              <router-link 
+                to="/alertas" 
+                class="mobile-nav-link"
+                :class="{ 'active': $route.path === '/alertas' }"
+                @click="closeMobileMenu"
+              >
+                <i class="bi bi-bell-fill"></i>
+                <span>Alertas</span>
+                <span v-if="alertCount > 0" class="badge-notification">{{ alertCount }}</span>
+              </router-link>
+              
               <router-link 
                 to="/usuarios" 
                 class="mobile-nav-link"
@@ -179,6 +193,19 @@
               >
                 <i class="bi bi-phone-fill"></i>
                 <span>Dispositivos</span>
+              </router-link>
+            </template>
+            
+            <!-- Employee Navigation -->
+            <template v-else>
+              <router-link 
+                to="/empleado" 
+                class="mobile-nav-link"
+                :class="{ 'active': $route.path === '/empleado' }"
+                @click="closeMobileMenu"
+              >
+                <i class="bi bi-house-fill"></i>
+                <span>Mi Panel</span>
               </router-link>
             </template>
           </nav>
