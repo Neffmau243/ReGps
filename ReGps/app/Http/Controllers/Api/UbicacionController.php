@@ -221,11 +221,11 @@ class UbicacionController extends Controller
         }
         
         if ($request->has('start_date')) {
-            $query->where('FechaHora', '>=', $request->start_date);
+            $query->where('FechaHora', '>=', $request->start_date . ' 00:00:00');
         }
         
         if ($request->has('end_date')) {
-            $query->where('FechaHora', '<=', $request->end_date);
+            $query->where('FechaHora', '<=', $request->end_date . ' 23:59:59');
         }
         
         $ubicaciones = $query->orderBy('FechaHora', 'desc')
