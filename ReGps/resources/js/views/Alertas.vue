@@ -2,91 +2,69 @@
   <div class="alertas-view">
     <div class="container py-8">
       <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-white mb-2">Panel de Alertas</h1>
-        <p class="text-gray-400">Monitorea las alertas del sistema en tiempo real</p>
-      </div>
-      
-      <!-- Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="stat-card">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm mb-1">Total</p>
-              <p class="text-3xl font-bold text-white">{{ alertas.length }}</p>
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/50 rounded-xl flex items-center justify-center">
+              <i class="bi bi-bell-fill text-white text-lg"></i>
             </div>
-            <i class="bi bi-bell text-gray-500 text-3xl"></i>
+            <div>
+              <h1 class="text-2xl font-bold text-white">Alertas del Sistema</h1>
+              <p class="text-gray-500 text-xs">{{ alertas.length }} alertas registradas</p>
+            </div>
           </div>
         </div>
-        
-        <div class="stat-card">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm mb-1">Pendientes</p>
-              <p class="text-3xl font-bold text-red-500">{{ pendingCount }}</p>
+
+        <!-- Inline Stats + Filters -->
+        <div class="flex items-center gap-8 flex-wrap">
+          <!-- Mini Stats -->
+          <div class="flex items-center gap-6">
+            <div class="stat-mini">
+              <i class="bi bi-exclamation-circle text-red-500 text-sm"></i>
+              <span class="text-white font-semibold text-sm">{{ pendingCount }}</span>
+              <span class="text-gray-500 text-xs">Pendientes</span>
             </div>
-            <i class="bi bi-exclamation-circle text-red-500 text-3xl"></i>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm mb-1">Resueltas</p>
-              <p class="text-3xl font-bold text-green-500">{{ resolvedCount }}</p>
+            <div class="stat-mini">
+              <i class="bi bi-check-circle text-green-500 text-sm"></i>
+              <span class="text-white font-semibold text-sm">{{ resolvedCount }}</span>
+              <span class="text-gray-500 text-xs">Resueltas</span>
             </div>
-            <i class="bi bi-check-circle text-green-500 text-3xl"></i>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm mb-1">Críticas</p>
-              <p class="text-3xl font-bold text-yellow-500">{{ criticalCount }}</p>
+            <div class="stat-mini">
+              <i class="bi bi-lightning text-yellow-500 text-sm"></i>
+              <span class="text-white font-semibold text-sm">{{ criticalCount }}</span>
+              <span class="text-gray-500 text-xs">Críticas</span>
             </div>
-            <i class="bi bi-lightning text-yellow-500 text-3xl"></i>
           </div>
-        </div>
-      </div>
-      
-      <!-- Filters -->
-      <div class="bg-dark-100 rounded-xl border border-primary/20 p-4 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <select v-model="filterType" class="input-field">
-              <option value="">Todos los tipos</option>
+
+          <!-- Divider -->
+          <div class="h-8 w-px bg-gray-700"></div>
+
+          <!-- Compact Filters -->
+          <div class="flex items-center gap-4 flex-1">
+            <select v-model="filterType" class="input-compact">
+              <option value="">Todas</option>
               <option value="Velocidad">Velocidad</option>
               <option value="Zona">Zona</option>
               <option value="Dispositivo">Dispositivo</option>
             </select>
-          </div>
-          
-          <div>
-            <select v-model="filterPriority" class="input-field">
-              <option value="">Todas las prioridades</option>
+            <select v-model="filterPriority" class="input-compact">
+              <option value="">Prioridad</option>
               <option value="Baja">Baja</option>
               <option value="Media">Media</option>
               <option value="Alta">Alta</option>
               <option value="Crítica">Crítica</option>
             </select>
-          </div>
-          
-          <div>
-            <select v-model="filterStatus" class="input-field">
-              <option value="">Todos los estados</option>
+            <select v-model="filterStatus" class="input-compact">
+              <option value="">Estado</option>
               <option value="Pendiente">Pendiente</option>
               <option value="Resuelta">Resuelta</option>
             </select>
-          </div>
-          
-          <div>
-            <button 
+            <button
               @click="loadAlertas"
-              class="btn-primary w-full"
+              class="btn-primary-compact"
+              title="Actualizar"
             >
-              <i class="bi bi-arrow-clockwise mr-2"></i>
-              Actualizar
+              <i class="bi bi-arrow-clockwise"></i>
             </button>
           </div>
         </div>
@@ -135,20 +113,21 @@
             </div>
             
             <!-- Actions -->
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center gap-2">
               <button 
                 v-if="alerta.Estado === 'Pendiente'"
                 @click="resolveAlert(alerta.AlertaID)"
-                class="btn-success"
+                class="action-btn toggle"
+                title="Resolver"
               >
-                <i class="bi bi-check-lg mr-1"></i>
-                Resolver
+                <i class="bi bi-check-circle-fill"></i>
               </button>
               <button 
                 @click="viewDetails(alerta)"
-                class="btn-secondary"
+                class="action-btn edit"
+                title="Ver detalles"
               >
-                <i class="bi bi-eye"></i>
+                <i class="bi bi-eye-fill"></i>
               </button>
             </div>
           </div>
@@ -288,27 +267,138 @@ const viewDetails = (alerta: Alerta) => {
 </script>
 
 <style scoped>
-.stat-card {
-  @apply bg-dark-100 rounded-xl p-6 border border-primary/20;
+/* Compact Elements */
+.stat-mini {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.stat-mini:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 107, 53, 0.2);
+}
+
+.input-compact {
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 140px;
+}
+
+.input-compact:focus {
+  outline: none;
+  border-color: #FF6B35;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.input-compact option {
+  background: #1f2937;
+  color: #ffffff;
+  padding: 12px;
+}
+
+.btn-primary-compact {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8C5E 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.25);
+}
+
+.btn-primary-compact:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.35);
+}
+
+.action-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 15px;
+}
+
+.action-btn:hover {
+  transform: translateY(-3px) scale(1.1);
+}
+
+.action-btn.edit {
+  color: #60a5fa;
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+.action-btn.edit:hover {
+  background: rgba(96, 165, 250, 0.15);
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 0 8px 16px rgba(96, 165, 250, 0.3);
+}
+
+.action-btn.toggle {
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.action-btn.toggle:hover {
+  background: rgba(251, 191, 36, 0.15);
+  border-color: rgba(251, 191, 36, 0.5);
+  box-shadow: 0 8px 16px rgba(251, 191, 36, 0.3);
 }
 
 .alert-card {
-  @apply bg-dark-100 rounded-xl p-6 border transition-colors hover:border-primary/40;
+  background: rgba(15, 20, 25, 0.7);
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
-.input-field {
-  @apply w-full px-4 py-2 bg-dark border border-gray-700 rounded-lg text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors;
+.alert-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #FF6B35 0%, #FF8C5E 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 12px 0 0 12px;
 }
 
-.btn-primary {
-  @apply px-6 py-2 bg-primary hover:bg-primary-600 text-white font-medium rounded-lg transition-all;
+.alert-card:hover {
+  background: rgba(255, 107, 53, 0.05);
+  border-color: rgba(255, 107, 53, 0.4);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.15);
 }
 
-.btn-secondary {
-  @apply px-4 py-2 bg-dark border border-gray-700 hover:border-primary text-white rounded-lg transition-all;
-}
-
-.btn-success {
-  @apply px-4 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-500 rounded-lg transition-all;
+.alert-card:hover::before {
+  opacity: 1;
 }
 </style>

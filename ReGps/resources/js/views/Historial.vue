@@ -1,10 +1,18 @@
+```
 <template>
   <div class="historial-view">
     <div class="container py-8">
       <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-white mb-2">Historial de Rutas</h1>
-        <p class="text-gray-400">Visualiza el recorrido histórico de los dispositivos</p>
+      <div class="mb-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/50 rounded-xl flex items-center justify-center">
+            <i class="bi bi-clock-history text-white text-lg"></i>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-white">Historial de Rutas</h1>
+            <p class="text-gray-500 text-xs">Visualiza el recorrido histórico</p>
+          </div>
+        </div>
       </div>
       
       <!-- Filters -->
@@ -12,31 +20,31 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-300 mb-2">Dispositivo</label>
-            <select v-model="filters.deviceId" class="input-field">
-              <option value="">Seleccionar dispositivo</option>
+            <select v-model="filters.deviceId" class="input-compact">
+              <option value="">Seleccionar</option>
               <option v-for="device in dispositivos" :key="device.DispositivoID" :value="device.DispositivoID">
-                {{ device.Modelo || `Dispositivo ${device.DispositivoID}` }}
+                {{ device.Modelo }} - {{ device.IMEI }}
               </option>
             </select>
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Fecha Inicio</label>
-            <input v-model="filters.startDate" type="date" class="input-field" />
+            <label class="block text-sm font-medium text-gray-300 mb-2">Desde</label>
+            <input v-model="filters.startDate" type="date" class="input-compact" />
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Fecha Fin</label>
-            <input v-model="filters.endDate" type="date" class="input-field" />
+            <label class="block text-sm font-medium text-gray-300 mb-2">Hasta</label>
+            <input v-model="filters.endDate" type="date" class="input-compact" />
           </div>
           
           <div class="flex items-end">
             <button 
               @click="loadHistory"
               :disabled="!filters.deviceId || loading"
-              class="btn-primary w-full"
+              class="btn-primary-compact w-full"
             >
-              <i class="bi bi-search mr-2"></i>
+              <i class="bi bi-search mr-1.5"></i>
               Buscar
             </button>
           </div>
@@ -265,15 +273,59 @@ const formatTime = (timestamp: string) => {
 </script>
 
 <style scoped>
-.input-field {
-  @apply w-full px-4 py-2 bg-dark border border-gray-700 rounded-lg text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors;
+.input-compact {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
-.btn-primary {
-  @apply px-6 py-2 bg-primary hover:bg-primary-600 text-white font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed;
+.input-compact:focus {
+  outline: none;
+  border-color: #FF6B35;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.input-compact option {
+  background: #1f2937;
+  color: #ffffff;
+  padding: 12px;
+}
+
+.btn-primary-compact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8C5E 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.25);
+}
+
+.btn-primary-compact:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.35);
+}
+
+.btn-primary-compact:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 :deep(.custom-marker) {
   @apply w-8 h-8 rounded-full flex items-center justify-center text-white text-xl shadow-lg;
 }
 </style>
+```

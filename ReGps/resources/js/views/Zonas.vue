@@ -2,47 +2,49 @@
   <div class="zonas-view">
     <div class="container py-8">
       <!-- Header -->
-      <div class="mb-8 flex items-center justify-between">
-        <div>
-          <h1 class="text-3xl font-bold text-white mb-2">Gestión de Zonas</h1>
-          <p class="text-gray-400">Administra las zonas de geofencing</p>
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/50 rounded-xl flex items-center justify-center">
+              <i class="bi bi-geo-alt-fill text-white text-lg"></i>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-white">Zonas de Geofencing</h1>
+              <p class="text-gray-500 text-xs">{{ zonas.length }} zonas configuradas</p>
+            </div>
+          </div>
+          <router-link 
+            v-if="authStore.isAdmin"
+            to="/zonas/crear" 
+            class="btn-primary-compact"
+          >
+            <i class="bi bi-plus-circle mr-1.5"></i>
+            Nueva
+          </router-link>
         </div>
-        <router-link 
-          v-if="authStore.isAdmin"
-          to="/zonas/crear" 
-          class="btn-primary"
-        >
-          <i class="bi bi-plus-circle mr-2"></i>
-          Nueva Zona
-        </router-link>
-      </div>
-      
-      <!-- Filters -->
-      <div class="bg-dark-100 rounded-xl border border-primary/20 p-4 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
+
+        <!-- Compact Filters -->
+        <div class="flex items-center gap-4 flex-wrap">
+          <div class="relative flex-1 max-w-xs">
+            <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
             <input 
               v-model="searchQuery"
               type="text" 
               placeholder="Buscar zona..."
-              class="input-field"
+              class="input-compact pl-8"
             />
           </div>
-          <div>
-            <select v-model="filterType" class="input-field">
-              <option value="">Todos los tipos</option>
-              <option value="Checkpoint">Checkpoint</option>
-              <option value="Zona Permitida">Zona Permitida</option>
-              <option value="Zona Restringida">Zona Restringida</option>
-            </select>
-          </div>
-          <div>
-            <select v-model="filterStatus" class="input-field">
-              <option value="">Todos los estados</option>
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
-            </select>
-          </div>
+          <select v-model="filterType" class="input-compact">
+            <option value="">Todas</option>
+            <option value="Checkpoint">Checkpoint</option>
+            <option value="Zona Permitida">Zona Permitida</option>
+            <option value="Zona Restringida">Zona Restringida</option>
+          </select>
+          <select v-model="filterStatus" class="input-compact">
+            <option value="">Estado</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
         </div>
       </div>
       
@@ -89,28 +91,28 @@
             {{ zona.Descripcion }}
           </p>
           
-          <div class="flex items-center space-x-2 pt-4 border-t border-gray-700">
+          <div class="flex items-center justify-end gap-2 pt-4 border-t border-gray-700">
             <router-link 
-              v-if="authStore.isAdmin"
               :to="`/zonas/editar/${zona.ZonaID}`"
-              class="btn-secondary flex-1"
+              class="action-btn edit"
+              title="Editar"
             >
-              <i class="bi bi-pencil mr-1"></i>
-              Editar
+              <i class="bi bi-pencil-fill"></i>
             </router-link>
             <button 
               @click="viewOnMap(zona)"
-              class="btn-secondary flex-1"
+              class="action-btn toggle"
+              title="Ver en mapa"
             >
-              <i class="bi bi-map mr-1"></i>
-              Ver
+              <i class="bi bi-map-fill"></i>
             </button>
             <button 
               v-if="authStore.isAdmin"
               @click="deleteZone(zona.ZonaID)"
-              class="btn-danger"
+              class="action-btn delete"
+              title="Eliminar"
             >
-              <i class="bi bi-trash"></i>
+              <i class="bi bi-trash-fill"></i>
             </button>
           </div>
         </div>
@@ -283,6 +285,135 @@ const deleteZone = async (id: number) => {
 </script>
 
 <style scoped>
+.input-compact {
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 140px;
+}
+
+.input-compact:focus {
+  outline: none;
+  border-color: #FF6B35;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.input-compact option {
+  background: #1f2937;
+  color: #ffffff;
+  padding: 12px;
+}
+
+.btn-primary-compact {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8C5E 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.25);
+}
+
+.btn-primary-compact:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.35);
+}
+
+.action-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 15px;
+}
+
+.action-btn:hover {
+  transform: translateY(-3px) scale(1.1);
+}
+
+.action-btn.edit {
+  color: #60a5fa;
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+.action-btn.edit:hover {
+  background: rgba(96, 165, 250, 0.15);
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 0 8px 16px rgba(96, 165, 250, 0.3);
+}
+
+.action-btn.toggle {
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.action-btn.toggle:hover {
+  background: rgba(251, 191, 36, 0.15);
+  border-color: rgba(251, 191, 36, 0.5);
+  box-shadow: 0 8px 16px rgba(251, 191, 36, 0.3);
+}
+
+.action-btn.delete {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+}
+
+.zone-card {
+  background: rgba(15, 20, 25, 0.7);
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid rgba(255, 107, 53, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.zone-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #FF6B35 0%, #FF8C5E 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 12px 0 0 12px;
+}
+
+.zone-card:hover {
+  background: rgba(255, 107, 53, 0.05);
+  border-color: rgba(255, 107, 53, 0.4);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.15);
+}
+
+.zone-card:hover::before {
+  opacity: 1;
+}
+
 .input-field {
   @apply w-full px-4 py-2 bg-dark border border-gray-700 rounded-lg text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors;
 }
@@ -290,16 +421,5 @@ const deleteZone = async (id: number) => {
 .btn-primary {
   @apply px-6 py-2 bg-primary hover:bg-primary-600 text-white font-medium rounded-lg transition-all;
 }
-
-.btn-secondary {
-  @apply px-4 py-2 bg-dark border border-gray-700 hover:border-primary text-white rounded-lg transition-all text-sm;
-}
-
-.btn-danger {
-  @apply px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-all;
-}
-
-.zone-card {
-  @apply bg-dark-100 rounded-xl p-6 border border-primary/20 hover:border-primary/40 transition-colors;
-}
 </style>
+```

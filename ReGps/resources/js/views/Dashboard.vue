@@ -229,7 +229,7 @@ const updateMarkers = () => {
         <div class="text-dark">
           <strong>${device.device_name}</strong><br>
           ${device.user_name}<br>
-          <small>Hace ${device.minutes_ago} minutos</small>
+          <small>${formatTimeAgo(device.minutes_ago)}</small>
         </div>
       `)
       .addTo(map!)

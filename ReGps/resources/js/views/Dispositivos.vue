@@ -2,34 +2,58 @@
   <div class="dispositivos-view">
     <div class="container py-8">
       <!-- Header -->
-      <div class="mb-8 flex items-center justify-between">
-        <div>
-          <h1 class="text-3xl font-bold text-white mb-2">Gestión de Dispositivos</h1>
-          <p class="text-gray-400">Administra los dispositivos GPS del sistema</p>
-        </div>
-        <button 
-          @click="showCreateModal = true"
-          class="btn-primary"
-        >
-          <i class="bi bi-plus-circle mr-2"></i>
-          Nuevo Dispositivo
-        </button>
-      </div>
-      
-      <!-- Search -->
-      <div class="bg-dark-100 rounded-xl border border-primary/20 p-4 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <input 
-              v-model="searchQuery"
-              type="text" 
-              placeholder="Buscar dispositivo..."
-              class="input-field"
-            />
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/50 rounded-xl flex items-center justify-center">
+              <i class="bi bi-phone-fill text-white text-lg"></i>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-white">Dispositivos GPS</h1>
+              <p class="text-gray-500 text-xs">{{ dispositivos.length }} registrados</p>
+            </div>
           </div>
-          <div>
-            <select v-model="filterStatus" class="input-field">
-              <option value="">Todos los estados</option>
+          <button 
+            @click="showCreateModal = true"
+            class="btn-primary-compact"
+          >
+            <i class="bi bi-plus-circle mr-1.5"></i>
+            Nuevo
+          </button>
+        </div>
+
+        <!-- Inline Stats + Filters -->
+        <div class="flex items-center gap-8 flex-wrap">
+          <!-- Mini Stats -->
+          <div class="flex items-center gap-6">
+            <div class="stat-mini">
+              <i class="bi bi-check-circle text-green-500 text-sm"></i>
+              <span class="text-white font-semibold text-sm">{{ dispositivos.filter(d => d.Estado === 'Activo').length }}</span>
+              <span class="text-gray-500 text-xs">Activos</span>
+            </div>
+            <div class="stat-mini">
+              <i class="bi bi-exclamation-triangle text-yellow-500 text-sm"></i>
+              <span class="text-white font-semibold text-sm">{{ dispositivos.filter(d => d.Estado === 'Mantenimiento').length }}</span>
+              <span class="text-gray-500 text-xs">Mantenimiento</span>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="h-8 w-px bg-gray-700"></div>
+
+          <!-- Compact Filters -->
+          <div class="flex items-center gap-4 flex-1">
+            <div class="relative flex-1 max-w-xs">
+              <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+              <input 
+                v-model="searchQuery"
+                type="text" 
+                placeholder="Buscar..."
+                class="input-compact pl-8"
+              />
+            </div>
+            <select v-model="filterStatus" class="input-compact">
+              <option value="">Todos</option>
               <option value="Activo">Activo</option>
               <option value="Inactivo">Inactivo</option>
               <option value="Mantenimiento">Mantenimiento</option>
@@ -55,7 +79,8 @@
                 <p class="text-gray-400 text-sm">{{ dispositivo.Marca || 'Sin marca' }}</p>
               </div>
             </div>
-            <span :class="getStatusBadge(dispositivo.Estado)">
+            <span class="status-badge" :class="getStatusBadgeClass(dispositivo.Estado)">
+              <span class="status-dot"></span>
               {{ dispositivo.Estado }}
             </span>
           </div>
@@ -82,26 +107,27 @@
             </div>
           </div>
           
-          <div class="flex items-center space-x-2 pt-4 border-t border-gray-700">
+          <div class="flex items-center justify-end gap-2 pt-4 border-t border-gray-700">
             <button 
               @click="editDevice(dispositivo)"
-              class="btn-secondary flex-1"
+              class="action-btn edit"
+              title="Editar"
             >
-              <i class="bi bi-pencil mr-1"></i>
-              Editar
+              <i class="bi bi-pencil-fill"></i>
             </button>
             <button 
               @click="viewLocation(dispositivo)"
-              class="btn-secondary flex-1"
+              class="action-btn toggle"
+              title="Ver ubicación"
             >
-              <i class="bi bi-geo-alt mr-1"></i>
-              Ubicar
+              <i class="bi bi-geo-alt-fill"></i>
             </button>
             <button 
               @click="deleteDevice(dispositivo.DispositivoID)"
-              class="btn-danger"
+              class="action-btn delete"
+              title="Eliminar"
             >
-              <i class="bi bi-trash"></i>
+              <i class="bi bi-trash-fill"></i>
             </button>
           </div>
         </div>
@@ -306,12 +332,12 @@ const getDeviceIconClass = (estado: string) => {
   }
 }
 
-const getStatusBadge = (estado: string) => {
+const getStatusBadgeClass = (estado: string) => {
   switch (estado) {
-    case 'Activo': return 'px-2 py-1 bg-green-500/20 text-green-500 text-xs rounded-full'
-    case 'Inactivo': return 'px-2 py-1 bg-red-500/20 text-red-500 text-xs rounded-full'
-    case 'Mantenimiento': return 'px-2 py-1 bg-yellow-500/20 text-yellow-500 text-xs rounded-full'
-    default: return 'px-2 py-1 bg-gray-500/20 text-gray-500 text-xs rounded-full'
+    case 'Activo': return 'active'
+    case 'Inactivo': return 'inactive'
+    case 'Mantenimiento': return 'warning'
+    default: return 'inactive'
   }
 }
 
@@ -402,27 +428,337 @@ const deleteDevice = async (id: number) => {
 </script>
 
 <style scoped>
+/* ============================================
+   DISPOSITIVOS VIEW - CONSISTENT STYLES
+   ============================================ */
+
+/* Compact Elements */
+.stat-mini {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.stat-mini:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 107, 53, 0.2);
+}
+
+.input-compact {
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 140px;
+}
+
+.input-compact:focus {
+  outline: none;
+  border-color: #FF6B35;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.input-compact:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 107, 53, 0.3);
+}
+
+.input-compact::placeholder {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+/* Select dropdown options styling */
+.input-compact option {
+  background: #1f2937;
+  color: #ffffff;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.input-compact option:hover {
+  background: #374151;
+}
+
+.input-compact option:checked {
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8C5E 100%);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.btn-primary-compact {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8C5E 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.25);
+}
+
+.btn-primary-compact:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.35);
+}
+
+.btn-primary-compact:active {
+  transform: translateY(0);
+}
+
+/* Action Buttons */
+.action-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 15px;
+}
+
+.action-btn:hover {
+  transform: translateY(-3px) scale(1.1);
+}
+
+.action-btn:active {
+  transform: translateY(-1px) scale(1.05);
+}
+
+.action-btn.edit {
+  color: #60a5fa;
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+.action-btn.edit:hover {
+  background: rgba(96, 165, 250, 0.15);
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 0 8px 16px rgba(96, 165, 250, 0.3);
+}
+
+.action-btn.toggle {
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.action-btn.toggle:hover {
+  background: rgba(251, 191, 36, 0.15);
+  border-color: rgba(251, 191, 36, 0.5);
+  box-shadow: 0 8px 16px rgba(251, 191, 36, 0.3);
+}
+
+.action-btn.delete {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid;
+  transition: all 0.3s ease;
+}
+
+.status-badge.active {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+.status-badge.inactive {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.status-badge.warning {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.3);
+  color: #fbbf24;
+}
+
+.status-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.status-badge.active .status-dot {
+  background: #10b981;
+}
+
+.status-badge.inactive .status-dot {
+  background: #ef4444;
+}
+
+.status-badge.warning .status-dot {
+  background: #fbbf24;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}
+
+/* Device Cards */
+.device-card {
+  background: rgba(15, 20, 25, 0.7);
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid rgba(255, 107, 53, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.device-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #FF6B35 0%, #FF8C5E 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 12px 0 0 12px;
+}
+
+.device-card:hover {
+  background: rgba(255, 107, 53, 0.05);
+  border-color: rgba(255, 107, 53, 0.4);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.15);
+}
+
+.device-card:hover::before {
+  opacity: 1;
+}
+
+/* Legacy Styles for Modal */
 .label {
-  @apply block text-sm font-medium text-gray-300 mb-2;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #d1d5db;
+  margin-bottom: 8px;
 }
 
 .input-field {
-  @apply w-full px-4 py-2 bg-dark border border-gray-700 rounded-lg text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors;
+  width: 100%;
+  padding: 12px 16px;
+  background: #0f1419;
+  border: 1px solid #374151;
+  border-radius: 12px;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.input-field:hover {
+  border-color: #4b5563;
 }
 
 .btn-primary {
-  @apply px-6 py-2 bg-primary hover:bg-primary-600 text-white font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8C5E 100%);
+  color: white;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 107, 53, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-secondary {
-  @apply px-4 py-2 bg-dark border border-gray-700 hover:border-primary text-white rounded-lg transition-all text-sm;
+  padding: 12px 24px;
+  background: #0f1419;
+  border: 2px solid #374151;
+  color: white;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.btn-danger {
-  @apply px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-all;
+.btn-secondary:hover {
+  border-color: #FF6B35;
+  background: #1a1a2e;
 }
 
-.device-card {
-  @apply bg-dark-100 rounded-xl p-6 border border-primary/20 hover:border-primary/40 transition-colors;
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 </style>
