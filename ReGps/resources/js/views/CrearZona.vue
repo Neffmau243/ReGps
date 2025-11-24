@@ -15,7 +15,10 @@
           <form @submit.prevent="handleSubmit" class="bg-dark-100 rounded-xl border border-primary/20 p-6 space-y-6">
             <!-- Nombre -->
             <div>
-              <label class="label">Nombre de la Zona *</label>
+              <label class="label">
+                <i class="bi bi-geo-alt-fill"></i>
+                Nombre de la Zona *
+              </label>
               <input 
                 v-model="form.Nombre"
                 type="text" 
@@ -27,7 +30,10 @@
             
             <!-- Tipo de Zona -->
             <div>
-              <label class="label">Tipo de Zona *</label>
+              <label class="label">
+                <i class="bi bi-tag-fill"></i>
+                Tipo de Zona *
+              </label>
               <select v-model="form.TipoZona" required class="input-field">
                 <option value="">Seleccionar</option>
                 <option value="Checkpoint">Checkpoint</option>
@@ -103,7 +109,6 @@
             <!-- Instructions -->
             <div class="bg-primary/10 border border-primary/30 rounded-lg p-4">
               <p class="text-primary text-sm font-medium mb-2">
-                <i class="bi bi-info-circle mr-2"></i>
                 Instrucciones
               </p>
               <ul class="text-gray-300 text-xs space-y-1">
@@ -127,11 +132,9 @@
                 class="btn-primary flex-1"
               >
                 <span v-if="!loading">
-                  <i class="bi bi-check-circle mr-2"></i>
                   {{ isEditing ? 'Actualizar' : 'Crear' }}
                 </span>
                 <span v-else>
-                  <i class="bi bi-arrow-repeat animate-spin mr-2"></i>
                   Guardando...
                 </span>
               </button>
@@ -147,7 +150,6 @@
           <div class="bg-dark-100 rounded-xl border border-primary/20 overflow-hidden sticky top-8">
             <div class="p-4 border-b border-primary/20">
               <h2 class="text-xl font-bold text-white flex items-center">
-                <i class="bi bi-map mr-2 text-primary"></i>
                 Mapa Interactivo
               </h2>
             </div>
@@ -358,7 +360,7 @@ const handleSubmit = async () => {
 }
 
 .input-field {
-  @apply w-full px-4 py-2 bg-dark border border-gray-700 rounded-lg text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors;
+  @apply w-full px-4 py-2 bg-dark border border-primary/20 rounded-lg text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors;
 }
 
 .btn-primary {
@@ -366,6 +368,6 @@ const handleSubmit = async () => {
 }
 
 .btn-secondary {
-  @apply px-6 py-2 bg-dark border border-gray-700 hover:border-primary text-white rounded-lg transition-all text-center;
+  @apply px-6 py-2 bg-dark border border-primary/20 hover:border-primary text-white rounded-lg transition-all text-center;
 }
 </style>

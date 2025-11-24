@@ -14,7 +14,6 @@
           <div class="card">
             <div class="card-header">
               <h2 class="card-title">
-                <i class="bi bi-geo-alt-fill"></i>
                 Control de Rastreo GPS
               </h2>
             </div>
@@ -24,7 +23,6 @@
                 <div class="flex items-center justify-between mb-4">
                   <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-full flex items-center justify-center" :class="trackingActive ? 'bg-success' : 'bg-dark-300'">
-                      <i class="bi" :class="trackingActive ? 'bi-broadcast text-white' : 'bi-geo-alt text-gray-400'" style="font-size: 1.5rem;"></i>
                     </div>
                     <div>
                       <h3 class="text-lg font-bold text-white">
@@ -44,12 +42,11 @@
                   :class="trackingActive ? 'btn-danger' : 'btn-primary'"
                   :disabled="!selectedDevice"
                 >
-                  <i class="bi" :class="trackingActive ? 'bi-stop-circle' : 'bi-play-circle'"></i>
+                  <i :class="trackingActive ? 'bi bi-stop-circle-fill' : 'bi bi-play-circle-fill'"></i>
                   {{ trackingActive ? 'Detener Rastreo' : 'Iniciar Rastreo' }}
                 </button>
 
                 <p v-if="!selectedDevice" class="text-warning text-sm mt-2 text-center">
-                  <i class="bi bi-exclamation-triangle"></i>
                   Selecciona un dispositivo para comenzar
                 </p>
               </div>
@@ -57,7 +54,7 @@
               <!-- Current Location -->
               <div v-if="currentLocation" class="bg-dark-200 rounded-lg p-4 border border-dark-300">
                 <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                  <i class="bi bi-pin-map text-primary"></i>
+                  <i class="bi bi-geo-alt-fill text-primary"></i>
                   Última Ubicación
                 </h3>
                 <div class="grid grid-cols-2 gap-4">
@@ -82,7 +79,6 @@
 
               <!-- GPS Error -->
               <div v-if="gpsError" class="alert alert-danger mt-4">
-                <i class="bi bi-exclamation-circle"></i>
                 {{ gpsError }}
               </div>
             </div>
@@ -92,7 +88,6 @@
           <div class="card mt-6">
             <div class="card-header">
               <h2 class="card-title">
-                <i class="bi bi-map"></i>
                 Mi Ubicación Actual
               </h2>
             </div>
@@ -108,18 +103,16 @@
           <div class="card">
             <div class="card-header">
               <h2 class="card-title">
-                <i class="bi bi-phone"></i>
                 Mis Dispositivos
               </h2>
             </div>
             <div class="card-body">
               <div v-if="loading" class="text-center py-4">
                 <div class="spinner mx-auto"></div>
-                <p class="text-gray-400 text-sm mt-2">Cargando...</p>
+                <p class="text-primary/80 text-sm mt-2 font-medium">Cargando dispositivos...</p>
               </div>
 
               <div v-else-if="dispositivos.length === 0" class="text-center py-8">
-                <i class="bi bi-phone text-gray-600" style="font-size: 3rem;"></i>
                 <p class="text-gray-400 mt-2">No tienes dispositivos asignados</p>
               </div>
 
@@ -134,7 +127,6 @@
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                       <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="device.Estado === 'Activo' ? 'bg-success/20' : 'bg-dark-300'">
-                        <i class="bi bi-phone" :class="device.Estado === 'Activo' ? 'text-success' : 'text-gray-400'"></i>
                       </div>
                       <div>
                         <p class="text-white font-medium">{{ device.Modelo }}</p>
@@ -156,7 +148,6 @@
           <div class="card">
             <div class="card-header">
               <h2 class="card-title">
-                <i class="bi bi-graph-up"></i>
                 Estadísticas de Hoy
               </h2>
             </div>
@@ -164,21 +155,18 @@
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
-                    <i class="bi bi-clock text-primary"></i>
                     <span class="text-gray-400">Tiempo Activo</span>
                   </div>
                   <span class="text-white font-bold">{{ stats.activeTime }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
-                    <i class="bi bi-geo-alt text-primary"></i>
                     <span class="text-gray-400">Ubicaciones</span>
                   </div>
                   <span class="text-white font-bold">{{ stats.locations }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
-                    <i class="bi bi-speedometer text-primary"></i>
                     <span class="text-gray-400">Vel. Promedio</span>
                   </div>
                   <span class="text-white font-bold">{{ stats.avgSpeed }} km/h</span>
@@ -221,7 +209,6 @@ const stats = ref({
 let map: L.Map | null = null
 let marker: L.Marker | null = null
 let trackingInterval: number | null = null
-let watchId: number | null = null
 
 const loadDispositivos = async () => {
   loading.value = true
@@ -275,7 +262,7 @@ const updateMap = (lat: number, lng: number) => {
   } else {
     const customIcon = L.divIcon({
       className: 'custom-marker',
-      html: '<div class="custom-marker bg-primary"><i class="bi bi-person-fill"></i></div>',
+      html: '<div class="custom-marker bg-primary"></div>',
       iconSize: [30, 30]
     })
     
@@ -349,39 +336,41 @@ const startTracking = () => {
   gpsError.value = ''
   trackingActive.value = true
   
-  // Obtener ubicación inicial
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      sendLocation(position)
-    },
-    (error) => {
-      gpsError.value = `Error GPS: ${error.message}`
-      trackingActive.value = false
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-  )
+  // Función para obtener y enviar ubicación
+  const getAndSendLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        sendLocation(position)
+      },
+      (error) => {
+        console.error('❌ Error GPS:', error)
+        gpsError.value = `Error GPS: ${error.message}`
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    )
+  }
   
-  // Watch position continuous
-  watchId = navigator.geolocation.watchPosition(
-    sendLocation,
-    (error) => {
-      gpsError.value = `Error GPS: ${error.message}`
-    },
-    { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 }
-  )
+  // Enviar ubicación inicial inmediatamente
+  getAndSendLocation()
+  
+  // Configurar intervalo para enviar cada 30 segundos
+  trackingInterval = window.setInterval(() => {
+    if (trackingActive.value) {
+      console.log('⏱️ Intervalo de 30s - Obteniendo nueva ubicación...')
+      getAndSendLocation()
+    }
+  }, 30000) // 30 segundos
+  
+  console.log('✅ Rastreo iniciado - Enviando ubicación cada 30 segundos')
 }
 
 const stopTracking = () => {
   trackingActive.value = false
   
-  if (watchId !== null) {
-    navigator.geolocation.clearWatch(watchId)
-    watchId = null
-  }
-  
   if (trackingInterval) {
     clearInterval(trackingInterval)
     trackingInterval = null
+    console.log('🛑 Rastreo detenido - Intervalo limpiado')
   }
 }
 

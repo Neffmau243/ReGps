@@ -13,7 +13,6 @@
           class="modal-close"
           aria-label="Cerrar modal"
         >
-          <i class="bi bi-x-lg"></i>
         </button>
       </div>
 

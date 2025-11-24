@@ -4,7 +4,7 @@
       <!-- Logo -->
       <div class="text-center mb-8">
         <div class="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-2xl mb-4">
-          <i class="bi bi-geo-alt-fill text-white text-4xl"></i>
+          <i class="bi bi-broadcast text-4xl text-white"></i>
         </div>
         <h1 class="text-4xl font-bold text-white mb-2">
           Re<span class="text-primary">GPS</span>
@@ -23,14 +23,11 @@
               Correo Electrónico
             </label>
             <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <i class="bi bi-envelope text-gray-400"></i>
-              </div>
               <input
                 v-model="email"
                 type="email"
                 required
-                class="input-field pl-10"
+                class="input-field"
                 placeholder="usuario@regps.com"
               />
             </div>
@@ -42,22 +39,19 @@
               Contraseña
             </label>
             <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <i class="bi bi-lock text-gray-400"></i>
-              </div>
               <input
                 v-model="password"
                 :type="showPassword ? 'text' : 'password'"
                 required
-                class="input-field pl-10 pr-10"
+                class="input-field pr-10"
                 placeholder="••••••••"
               />
               <button
                 type="button"
                 @click="showPassword = !showPassword"
-                class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-primary transition-colors"
               >
-                <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'" class="text-gray-400 hover:text-primary"></i>
+                <i :class="showPassword ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill'"></i>
               </button>
             </div>
           </div>
@@ -65,7 +59,6 @@
           <!-- Error Message -->
           <div v-if="errorMessage" class="bg-red-500/10 border border-red-500/50 rounded-lg p-3">
             <p class="text-red-500 text-sm flex items-center">
-              <i class="bi bi-exclamation-circle mr-2"></i>
               {{ errorMessage }}
             </p>
           </div>
@@ -76,30 +69,30 @@
             :disabled="loading"
             class="btn-primary w-full"
           >
-            <span v-if="!loading">Iniciar Sesión</span>
+            <span v-if="!loading" class="flex items-center justify-center gap-2">
+              <i class="bi bi-box-arrow-in-right"></i>
+              Iniciar Sesión
+            </span>
             <span v-else class="flex items-center justify-center">
-              <i class="bi bi-arrow-repeat animate-spin mr-2"></i>
               Iniciando...
             </span>
           </button>
         </form>
         
         <!-- Test Credentials -->
-        <div class="mt-6 pt-6 border-t border-gray-700">
+        <div class="mt-6 pt-6 border-t border-primary/20">
           <p class="text-xs text-gray-400 text-center mb-3">Credenciales de prueba:</p>
           <div class="grid grid-cols-2 gap-3">
             <button
               @click="fillTestCredentials('admin')"
               class="px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary text-xs rounded-lg transition-colors"
             >
-              <i class="bi bi-shield-check mr-1"></i>
               Admin
             </button>
             <button
               @click="fillTestCredentials('empleado')"
               class="px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary text-xs rounded-lg transition-colors"
             >
-              <i class="bi bi-person mr-1"></i>
               Empleado
             </button>
           </div>

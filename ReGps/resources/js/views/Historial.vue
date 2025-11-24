@@ -5,9 +5,6 @@
       <!-- Header -->
       <div class="mb-6">
         <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/50 rounded-xl flex items-center justify-center">
-            <i class="bi bi-clock-history text-white text-lg"></i>
-          </div>
           <div>
             <h1 class="text-2xl font-bold text-white">Historial de Rutas</h1>
             <p class="text-gray-500 text-xs">Visualiza el recorrido histórico</p>
@@ -44,7 +41,6 @@
               :disabled="!filters.deviceId || loading"
               class="btn-primary-compact w-full"
             >
-              <i class="bi bi-search mr-1.5"></i>
               Buscar
             </button>
           </div>
@@ -58,7 +54,6 @@
           <div class="bg-dark-100 rounded-xl border border-primary/20 overflow-hidden">
             <div class="p-4 border-b border-primary/20">
               <h2 class="text-xl font-bold text-white flex items-center">
-                <i class="bi bi-map mr-2 text-primary"></i>
                 Ruta Recorrida
               </h2>
             </div>
@@ -71,7 +66,6 @@
           <!-- Device Info -->
           <div class="bg-dark-100 rounded-xl border border-primary/20 p-6">
             <h3 class="text-lg font-bold text-white mb-4 flex items-center">
-              <i class="bi bi-phone mr-2 text-primary"></i>
               Información del Dispositivo
             </h3>
             <div class="space-y-3">
@@ -88,14 +82,14 @@
           
           <!-- Statistics -->
           <div class="bg-dark-100 rounded-xl border border-primary/20 p-6">
-            <h3 class="text-lg font-bold text-white mb-4 flex items-center">
-              <i class="bi bi-graph-up mr-2 text-primary"></i>
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <i class="bi bi-bar-chart-fill text-primary"></i>
               Estadísticas
             </h3>
             <div class="space-y-4">
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2">
-                  <i class="bi bi-geo-alt text-primary"></i>
+                  <i class="bi bi-geo-fill text-info"></i>
                   <span class="text-gray-400">Puntos</span>
                 </div>
                 <span class="text-white font-bold">{{ historyData.statistics.total_points }}</span>
@@ -103,7 +97,7 @@
               
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2">
-                  <i class="bi bi-arrows-move text-primary"></i>
+                  <i class="bi bi-signpost-2-fill text-success"></i>
                   <span class="text-gray-400">Distancia</span>
                 </div>
                 <span class="text-white font-bold">{{ historyData.statistics.distance_km }} km</span>
@@ -111,18 +105,18 @@
               
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2">
-                  <i class="bi bi-clock text-primary"></i>
+                  <i class="bi bi-clock-fill text-warning"></i>
                   <span class="text-gray-400">Duración</span>
                 </div>
-                <span class="text-white font-bold">{{ historyData.statistics.duration_minutes }} min</span>
+                <span class="text-white font-bold">{{ formatDuration(historyData.statistics.duration_minutes) }}</span>
               </div>
             </div>
           </div>
           
           <!-- Timeline -->
           <div class="bg-dark-100 rounded-xl border border-primary/20 p-6">
-            <h3 class="text-lg font-bold text-white mb-4 flex items-center">
-              <i class="bi bi-clock-history mr-2 text-primary"></i>
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <i class="bi bi-clock-history text-primary"></i>
               Línea de Tiempo
             </h3>
             <div class="space-y-3 max-h-[300px] overflow-y-auto scrollbar-thin">
@@ -144,7 +138,6 @@
       
       <!-- Empty State -->
       <div v-else class="bg-dark-100 rounded-xl border border-primary/20 p-12 text-center">
-        <i class="bi bi-map text-gray-600 text-6xl mb-4"></i>
         <h3 class="text-xl font-bold text-white mb-2">Selecciona un dispositivo</h3>
         <p class="text-gray-400">Elige un dispositivo y rango de fechas para ver el historial</p>
       </div>
@@ -238,25 +231,25 @@ const drawRoute = () => {
   const latlngs = locations.map((loc: any) => [loc.latitude, loc.longitude])
   L.polyline(latlngs, { color: '#FF6B35', weight: 3 }).addTo(map!)
   
-  // Add start marker
+  // Add start marker (RED = Inicio)
   const startIcon = L.divIcon({
-    html: '<div class="custom-marker bg-green-500"><i class="bi bi-play-fill"></i></div>',
+    html: '<div class="custom-marker bg-red-500"></div>',
     className: '',
     iconSize: [30, 30]
   })
   L.marker([locations[0].latitude, locations[0].longitude], { icon: startIcon })
-    .bindPopup('Inicio')
+    .bindPopup('Fin')
     .addTo(map!)
   
-  // Add end marker
+  // Add end marker (GREEN = Fin)
   const endIcon = L.divIcon({
-    html: '<div class="custom-marker bg-red-500"><i class="bi bi-stop-fill"></i></div>',
+    html: '<div class="custom-marker bg-green-500"></div>',
     className: '',
     iconSize: [30, 30]
   })
   const lastLoc = locations[locations.length - 1]
   L.marker([lastLoc.latitude, lastLoc.longitude], { icon: endIcon })
-    .bindPopup('Fin')
+    .bindPopup('Inicio')
     .addTo(map!)
   
   // Fit bounds
@@ -269,6 +262,22 @@ const formatTime = (timestamp: string) => {
     hour: '2-digit',
     minute: '2-digit'
   })
+}
+
+const formatDuration = (minutes: number) => {
+  if (minutes < 60) {
+    return `${Math.round(minutes)} min`
+  } else if (minutes < 1440) {
+    // Menos de 24 horas - mostrar en horas y minutos
+    const hours = Math.floor(minutes / 60)
+    const mins = Math.round(minutes % 60)
+    return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`
+  } else {
+    // 24 horas o más - mostrar en días y horas
+    const days = Math.floor(minutes / 1440)
+    const hours = Math.floor((minutes % 1440) / 60)
+    return hours > 0 ? `${days}d ${hours}h` : `${days}d`
+  }
 }
 </script>
 

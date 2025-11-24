@@ -5,9 +5,6 @@
       <div class="mb-6">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/50 rounded-xl flex items-center justify-center">
-              <i class="bi bi-geo-alt-fill text-white text-lg"></i>
-            </div>
             <div>
               <h1 class="text-2xl font-bold text-white">Zonas de Geofencing</h1>
               <p class="text-gray-500 text-xs">{{ zonas.length }} zonas configuradas</p>
@@ -18,20 +15,19 @@
             to="/zonas/crear" 
             class="btn-primary-compact"
           >
-            <i class="bi bi-plus-circle mr-1.5"></i>
-            Nueva
+            <i class="bi bi-geo-alt-fill"></i> Nueva
           </router-link>
         </div>
 
         <!-- Compact Filters -->
         <div class="flex items-center gap-4 flex-wrap">
           <div class="relative flex-1 max-w-xs">
-            <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+            <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
             <input 
               v-model="searchQuery"
               type="text" 
               placeholder="Buscar zona..."
-              class="input-compact pl-8"
+              class="input-compact pl-10"
             />
           </div>
           <select v-model="filterType" class="input-compact">
@@ -71,18 +67,18 @@
           </div>
           
           <div class="space-y-2 mb-4">
-            <div class="flex items-center text-sm">
-              <i class="bi bi-geo-alt text-gray-400 mr-2"></i>
+            <div class="flex items-center text-sm gap-2">
+              <i class="bi bi-diagram-3-fill text-gray-400"></i>
               <span class="text-gray-300">{{ zona.TipoGeometria }}</span>
             </div>
             
-            <div v-if="zona.Radio" class="flex items-center text-sm">
-              <i class="bi bi-circle text-gray-400 mr-2"></i>
+            <div v-if="zona.Radio" class="flex items-center text-sm gap-2">
+              <i class="bi bi-circle text-gray-400"></i>
               <span class="text-gray-300">Radio: {{ zona.Radio }}m</span>
             </div>
             
-            <div v-if="zona.HorarioInicio && zona.HorarioFin" class="flex items-center text-sm">
-              <i class="bi bi-clock text-gray-400 mr-2"></i>
+            <div v-if="zona.HorarioInicio && zona.HorarioFin" class="flex items-center text-sm gap-2">
+              <i class="bi bi-clock-fill text-gray-400"></i>
               <span class="text-gray-300">{{ zona.HorarioInicio }} - {{ zona.HorarioFin }}</span>
             </div>
           </div>
@@ -91,7 +87,7 @@
             {{ zona.Descripcion }}
           </p>
           
-          <div class="flex items-center justify-end gap-2 pt-4 border-t border-gray-700">
+          <div class="flex items-center justify-end gap-2 pt-4 border-t border-primary/20">
             <router-link 
               :to="`/zonas/editar/${zona.ZonaID}`"
               class="action-btn edit"
@@ -120,7 +116,6 @@
       
       <!-- Empty State -->
       <div v-if="filteredZonas.length === 0" class="bg-dark-100 rounded-xl border border-primary/20 p-12 text-center">
-        <i class="bi bi-geo text-gray-600 text-6xl mb-4"></i>
         <h3 class="text-xl font-bold text-white mb-2">No hay zonas</h3>
         <p class="text-gray-400 mb-6">Crea tu primera zona de geofencing</p>
         <router-link 
@@ -128,7 +123,7 @@
           to="/zonas/crear" 
           class="btn-primary inline-flex items-center"
         >
-          <i class="bi bi-plus-circle mr-2"></i>
+          <i class="bi bi-geo-alt-fill"></i>
           Nueva Zona
         </router-link>
       </div>
@@ -140,7 +135,6 @@
         <div class="p-4 border-b border-primary/20 flex items-center justify-between">
           <h3 class="text-xl font-bold text-white">{{ selectedZone?.Nombre }}</h3>
           <button @click="showMapModal = false" class="text-gray-400 hover:text-white">
-            <i class="bi bi-x-lg text-2xl"></i>
           </button>
         </div>
         <div id="zoneMap" class="h-[500px]"></div>
@@ -207,14 +201,14 @@ const getZoneIcon = (tipo: string) => {
     case 'Checkpoint': return 'bi bi-flag-fill'
     case 'Zona Permitida': return 'bi bi-check-circle-fill'
     case 'Zona Restringida': return 'bi bi-x-circle-fill'
-    default: return 'bi bi-geo-fill'
+    default: return 'bi bi-geo-alt-fill'
   }
 }
 
 const getZoneIconClass = (tipo: string) => {
   const base = 'w-10 h-10 rounded-lg flex items-center justify-center text-xl'
   switch (tipo) {
-    case 'Checkpoint': return `${base} bg-blue-500/20 text-blue-500`
+    case 'Checkpoint': return `${base} bg-primary/20 text-primary`
     case 'Zona Permitida': return `${base} bg-green-500/20 text-green-500`
     case 'Zona Restringida': return `${base} bg-red-500/20 text-red-500`
     default: return `${base} bg-primary/20 text-primary`
@@ -224,7 +218,7 @@ const getZoneIconClass = (tipo: string) => {
 const getStatusBadge = (estado: string) => {
   return estado === 'Activo' 
     ? 'px-2 py-1 bg-green-500/20 text-green-500 text-xs rounded-full'
-    : 'px-2 py-1 bg-gray-500/20 text-gray-500 text-xs rounded-full'
+    : 'px-2 py-1 bg-primary/10 text-gray-400 text-xs rounded-full'
 }
 
 const viewOnMap = (zona: Zona) => {
@@ -360,14 +354,14 @@ const deleteZone = async (id: number) => {
 }
 
 .action-btn.toggle {
-  color: #fbbf24;
-  border-color: rgba(251, 191, 36, 0.3);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
 .action-btn.toggle:hover {
-  background: rgba(251, 191, 36, 0.15);
-  border-color: rgba(251, 191, 36, 0.5);
-  box-shadow: 0 8px 16px rgba(251, 191, 36, 0.3);
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
 }
 
 .action-btn.delete {
@@ -382,7 +376,7 @@ const deleteZone = async (id: number) => {
 }
 
 .zone-card {
-  background: rgba(15, 20, 25, 0.7);
+  background: transparent;
   border-radius: 12px;
   padding: 24px;
   border: 1px solid rgba(255, 107, 53, 0.2);
@@ -415,7 +409,7 @@ const deleteZone = async (id: number) => {
 }
 
 .input-field {
-  @apply w-full px-4 py-2 bg-dark border border-gray-700 rounded-lg text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors;
+  @apply w-full px-4 py-2 bg-dark border border-primary/20 rounded-lg text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors;
 }
 
 .btn-primary {

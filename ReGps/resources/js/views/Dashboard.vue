@@ -12,47 +12,47 @@
         <div class="stat-card">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm mb-1">Dispositivos Activos</p>
+              <p class="text-gray-400 text-sm mb-1 flex items-center gap-2">
+                <i class="bi bi-phone-fill text-success"></i>
+                Dispositivos Activos
+              </p>
               <p class="text-3xl font-bold text-white">{{ stats.activeDevices }}</p>
             </div>
-            <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
-              <i class="bi bi-phone text-green-500 text-2xl"></i>
-            </div>
           </div>
         </div>
         
         <div class="stat-card">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm mb-1">En Movimiento</p>
+              <p class="text-gray-400 text-sm mb-1 flex items-center gap-2">
+                <i class="bi bi-people-fill text-primary"></i>
+                Total Empleados
+              </p>
               <p class="text-3xl font-bold text-white">{{ stats.moving }}</p>
             </div>
-            <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
-              <i class="bi bi-arrow-right-circle text-primary text-2xl"></i>
-            </div>
           </div>
         </div>
         
         <div class="stat-card">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm mb-1">Alertas Activas</p>
+              <p class="text-gray-400 text-sm mb-1 flex items-center gap-2">
+                <i class="bi bi-bell-fill text-warning"></i>
+                Alertas Hoy
+              </p>
               <p class="text-3xl font-bold text-white">{{ stats.alerts }}</p>
             </div>
-            <div class="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
-              <i class="bi bi-bell text-red-500 text-2xl"></i>
-            </div>
           </div>
         </div>
         
         <div class="stat-card">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm mb-1">Zonas Activas</p>
+              <p class="text-gray-400 text-sm mb-1 flex items-center gap-2">
+                <i class="bi bi-geo-alt-fill text-info"></i>
+                Zonas Activas
+              </p>
               <p class="text-3xl font-bold text-white">{{ stats.zones }}</p>
-            </div>
-            <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-              <i class="bi bi-geo text-yellow-500 text-2xl"></i>
             </div>
           </div>
         </div>
@@ -65,14 +65,12 @@
           <div class="bg-dark-100 rounded-xl border border-primary/20 overflow-hidden">
             <div class="p-4 border-b border-primary/20 flex items-center justify-between">
               <h2 class="text-xl font-bold text-white flex items-center">
-                <i class="bi bi-map mr-2 text-primary"></i>
                 Mapa en Tiempo Real
               </h2>
               <button 
                 @click="refreshLocations"
                 class="px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors text-sm"
               >
-                <i class="bi bi-arrow-clockwise mr-1"></i>
                 Actualizar
               </button>
             </div>
@@ -84,42 +82,40 @@
         <div class="lg:col-span-1">
           <div class="bg-dark-100 rounded-xl border border-primary/20">
             <div class="p-4 border-b border-primary/20">
-              <h2 class="text-xl font-bold text-white flex items-center">
-                <i class="bi bi-list-ul mr-2 text-primary"></i>
-                Dispositivos
+              <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                <i class="bi bi-phone-vibrate-fill text-primary"></i> Dispositivos
               </h2>
             </div>
-            <div class="p-4 space-y-3 max-h-[500px] overflow-y-auto scrollbar-thin">
+            <div class="p-6 space-y-4 max-h-[500px] overflow-y-auto scrollbar-thin">
               <div 
                 v-for="device in devices" 
                 :key="device.device_id"
                 class="device-card"
+                @click="centerMap(device)"
               >
-                <div class="flex items-start justify-between">
-                  <div class="flex items-start space-x-3">
-                    <div :class="getStatusClass(device.minutes_ago)">
-                      <i class="bi bi-phone text-white"></i>
-                    </div>
-                    <div>
-                      <p class="text-white font-medium">{{ device.device_name }}</p>
-                      <p class="text-gray-400 text-sm">{{ device.user_name }}</p>
-                      <p class="text-gray-500 text-xs mt-1">
-                        <i class="bi bi-clock mr-1"></i>
-                        {{ formatTimeAgo(device.minutes_ago) }}
-                      </p>
-                    </div>
+                <div class="flex items-center gap-4">
+                  <!-- Info con mejor tipografía -->
+                  <div class="flex-1 min-w-0">
+                    <h4 class="text-white font-bold text-base mb-1 truncate">{{ device.device_name }}</h4>
+                    <p class="text-gray-400 text-sm mb-1">
+                      {{ device.user_name }}
+                    </p>
+                    <p class="text-gray-500 text-xs">
+                      {{ formatTimeAgo(device.minutes_ago) }}
+                    </p>
                   </div>
+                  
+                  <!-- Botón de acción mejorado -->
                   <button 
-                    @click="centerMap(device)"
-                    class="text-primary hover:text-primary-400 transition-colors"
+                    @click.stop="centerMap(device)"
+                    class="w-10 h-10 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary flex items-center justify-center transition-all hover:scale-110 flex-shrink-0"
+                    title="Ver en mapa"
                   >
-                    <i class="bi bi-geo-alt-fill"></i>
                   </button>
                 </div>
               </div>
               
               <div v-if="devices.length === 0" class="text-center py-8">
-                <i class="bi bi-inbox text-gray-600 text-4xl mb-2"></i>
                 <p class="text-gray-400">No hay dispositivos activos</p>
               </div>
             </div>
@@ -218,7 +214,6 @@ const updateMarkers = () => {
   devices.value.forEach(device => {
     const icon = L.divIcon({
       html: `<div class="custom-marker ${getMarkerColor(device.minutes_ago)}">
-        <i class="bi bi-geo-alt-fill"></i>
       </div>`,
       className: '',
       iconSize: [30, 30]
@@ -254,12 +249,6 @@ const centerMap = (device: Device) => {
   }
 }
 
-const getStatusClass = (minutesAgo: number) => {
-  if (minutesAgo < 5) return 'w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center'
-  if (minutesAgo < 15) return 'w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center'
-  return 'w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center'
-}
-
 const getMarkerColor = (minutesAgo: number) => {
   if (minutesAgo < 5) return 'marker-green'
   if (minutesAgo < 15) return 'marker-yellow'
@@ -284,37 +273,6 @@ const formatTimeAgo = (minutes: number): string => {
 </script>
 
 <style scoped>
-/* Stat Cards Mejoradas */
-.stat-card {
-  @apply bg-dark-100 rounded-xl p-6 border border-primary/20;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-}
-
-.stat-card:hover {
-  @apply border-primary/50;
-  transform: translateY(-4px);
-  box-shadow: 0 10px 20px -5px rgba(255, 107, 53, 0.25), 0 0 15px rgba(255, 107, 53, 0.1);
-}
-
-/* Device Cards Mejoradas */
-.device-card {
-  @apply bg-dark-200 rounded-lg p-4 border border-dark-300;
-  transition: all 0.25s ease;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.device-card:hover {
-  @apply border-primary/40 bg-dark-100;
-  transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.15);
-}
-
-.device-card:active {
-  transform: translateX(2px);
-}
-
 /* Custom Markers */
 :deep(.custom-marker) {
   @apply w-8 h-8 rounded-full flex items-center justify-center text-white text-xl;

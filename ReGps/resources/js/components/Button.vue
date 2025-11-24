@@ -5,8 +5,6 @@
     :class="buttonClasses"
     @click="$emit('click', $event)"
   >
-    <i v-if="loading" class="bi bi-arrow-repeat animate-spin"></i>
-    <i v-else-if="icon" :class="icon"></i>
     <span v-if="$slots.default">
       <slot></slot>
     </span>

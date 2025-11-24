@@ -47,10 +47,12 @@ withDefaults(defineProps<Props>(), {
 .loading-spinner {
   width: 3rem;
   height: 3rem;
-  border: 4px solid var(--color-dark-300);
-  border-top-color: var(--color-primary);
+  border: 4px solid rgba(255, 107, 53, 0.2);
+  border-top-color: #FF6B35;
+  border-right-color: #FF6B35;
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
 }
 
 @keyframes spin {

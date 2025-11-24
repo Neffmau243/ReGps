@@ -5,9 +5,6 @@
       <div class="mb-6">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/50 rounded-xl flex items-center justify-center">
-              <i class="bi bi-phone-fill text-white text-lg"></i>
-            </div>
             <div>
               <h1 class="text-2xl font-bold text-white">Dispositivos GPS</h1>
               <p class="text-gray-500 text-xs">{{ dispositivos.length }} registrados</p>
@@ -17,8 +14,7 @@
             @click="showCreateModal = true"
             class="btn-primary-compact"
           >
-            <i class="bi bi-plus-circle mr-1.5"></i>
-            Nuevo
+            <i class="bi bi-phone-fill"></i> Nuevo
           </button>
         </div>
 
@@ -27,12 +23,10 @@
           <!-- Mini Stats -->
           <div class="flex items-center gap-6">
             <div class="stat-mini">
-              <i class="bi bi-check-circle text-green-500 text-sm"></i>
               <span class="text-white font-semibold text-sm">{{ dispositivos.filter(d => d.Estado === 'Activo').length }}</span>
               <span class="text-gray-500 text-xs">Activos</span>
             </div>
             <div class="stat-mini">
-              <i class="bi bi-exclamation-triangle text-yellow-500 text-sm"></i>
               <span class="text-white font-semibold text-sm">{{ dispositivos.filter(d => d.Estado === 'Mantenimiento').length }}</span>
               <span class="text-gray-500 text-xs">Mantenimiento</span>
             </div>
@@ -44,12 +38,12 @@
           <!-- Compact Filters -->
           <div class="flex items-center gap-4 flex-1">
             <div class="relative flex-1 max-w-xs">
-              <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+              <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
               <input 
                 v-model="searchQuery"
                 type="text" 
                 placeholder="Buscar..."
-                class="input-compact pl-8"
+                class="input-compact pl-10"
               />
             </div>
             <select v-model="filterStatus" class="input-compact">
@@ -72,7 +66,6 @@
           <div class="flex items-start justify-between mb-4">
             <div class="flex items-start space-x-3">
               <div :class="getDeviceIconClass(dispositivo.Estado)">
-                <i class="bi bi-phone-fill"></i>
               </div>
               <div>
                 <h3 class="text-lg font-bold text-white">{{ dispositivo.Modelo }}</h3>
@@ -87,22 +80,18 @@
           
           <div class="space-y-2 mb-4">
             <div class="flex items-center text-sm">
-              <i class="bi bi-hash text-gray-400 mr-2"></i>
               <span class="text-gray-300">IMEI: {{ dispositivo.IMEI }}</span>
             </div>
             
             <div v-if="dispositivo.Marca" class="flex items-center text-sm">
-              <i class="bi bi-tag text-gray-400 mr-2"></i>
               <span class="text-gray-300">Marca: {{ dispositivo.Marca }}</span>
             </div>
             
             <div v-if="dispositivo.EmpleadoID" class="flex items-center text-sm">
-              <i class="bi bi-person text-gray-400 mr-2"></i>
               <span class="text-gray-300">{{ getEmpleadoNombre(dispositivo.EmpleadoID) }}</span>
             </div>
             
             <div class="flex items-center text-sm">
-              <i class="bi bi-calendar text-gray-400 mr-2"></i>
               <span class="text-gray-300">{{ formatDate(dispositivo.created_at || dispositivo.FechaAsignacion) }}</span>
             </div>
           </div>
@@ -120,7 +109,6 @@
               class="action-btn toggle"
               title="Ver ubicación"
             >
-              <i class="bi bi-geo-alt-fill"></i>
             </button>
             <button 
               @click="deleteDevice(dispositivo.DispositivoID)"
@@ -135,14 +123,12 @@
       
       <!-- Empty State -->
       <div v-if="filteredDispositivos.length === 0" class="bg-dark-100 rounded-xl border border-primary/20 p-12 text-center">
-        <i class="bi bi-phone text-gray-600 text-6xl mb-4"></i>
         <h3 class="text-xl font-bold text-white mb-2">No hay dispositivos</h3>
         <p class="text-gray-400 mb-6">Registra tu primer dispositivo GPS</p>
         <button 
           @click="showCreateModal = true"
           class="btn-primary inline-flex items-center"
         >
-          <i class="bi bi-plus-circle mr-2"></i>
           Nuevo Dispositivo
         </button>
       </div>
@@ -156,13 +142,15 @@
             {{ editingDevice ? 'Editar Dispositivo' : 'Nuevo Dispositivo' }}
           </h3>
           <button @click="closeModal" class="text-gray-400 hover:text-white">
-            <i class="bi bi-x-lg text-2xl"></i>
           </button>
         </div>
         
         <form @submit.prevent="handleSubmit" class="p-6 space-y-4">
           <div>
-            <label class="label">Modelo *</label>
+            <label class="label">
+              <i class="bi bi-phone-fill"></i>
+              Modelo *
+            </label>
             <input 
               v-model="form.Modelo"
               type="text" 
@@ -173,7 +161,10 @@
           </div>
           
           <div>
-            <label class="label">IMEI *</label>
+            <label class="label">
+              <i class="bi bi-upc-scan"></i>
+              IMEI *
+            </label>
             <input 
               v-model="form.IMEI"
               type="text" 
@@ -187,7 +178,10 @@
           </div>
           
           <div>
-            <label class="label">Marca</label>
+            <label class="label">
+              <i class="bi bi-tag-fill"></i>
+              Marca
+            </label>
             <input 
               v-model="form.Marca"
               type="text" 
@@ -222,10 +216,10 @@
               class="btn-primary flex-1"
             >
               <span v-if="!loading">
+                <i class="bi bi-check-circle-fill"></i>
                 {{ editingDevice ? 'Actualizar' : 'Crear' }}
               </span>
               <span v-else>
-                <i class="bi bi-arrow-repeat animate-spin mr-2"></i>
                 Guardando...
               </span>
             </button>
@@ -234,6 +228,7 @@
               @click="closeModal"
               class="btn-secondary"
             >
+              <i class="bi bi-x-circle-fill"></i>
               Cancelar
             </button>
           </div>
@@ -327,8 +322,8 @@ const getDeviceIconClass = (estado: string) => {
   switch (estado) {
     case 'Activo': return `${base} bg-green-500/20 text-green-500`
     case 'Inactivo': return `${base} bg-red-500/20 text-red-500`
-    case 'Mantenimiento': return `${base} bg-yellow-500/20 text-yellow-500`
-    default: return `${base} bg-gray-500/20 text-gray-500`
+    case 'Mantenimiento': return `${base} bg-primary/20 text-primary`
+    default: return `${base} bg-primary/10 text-gray-400`
   }
 }
 
@@ -556,14 +551,14 @@ const deleteDevice = async (id: number) => {
 }
 
 .action-btn.toggle {
-  color: #fbbf24;
-  border-color: rgba(251, 191, 36, 0.3);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
 .action-btn.toggle:hover {
-  background: rgba(251, 191, 36, 0.15);
-  border-color: rgba(251, 191, 36, 0.5);
-  box-shadow: 0 8px 16px rgba(251, 191, 36, 0.3);
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
 }
 
 .action-btn.delete {
@@ -603,9 +598,9 @@ const deleteDevice = async (id: number) => {
 }
 
 .status-badge.warning {
-  background: rgba(251, 191, 36, 0.1);
-  border-color: rgba(251, 191, 36, 0.3);
-  color: #fbbf24;
+  background: rgba(255, 107, 53, 0.1);
+  border-color: rgba(255, 107, 53, 0.3);
+  color: #FF6B35;
 }
 
 .status-badge:hover {
@@ -629,7 +624,7 @@ const deleteDevice = async (id: number) => {
 }
 
 .status-badge.warning .status-dot {
-  background: #fbbf24;
+  background: #FF6B35;
 }
 
 @keyframes pulse-dot {
@@ -641,40 +636,6 @@ const deleteDevice = async (id: number) => {
     opacity: 0.6;
     transform: scale(1.2);
   }
-}
-
-/* Device Cards */
-.device-card {
-  background: rgba(15, 20, 25, 0.7);
-  border-radius: 12px;
-  padding: 24px;
-  border: 1px solid rgba(255, 107, 53, 0.2);
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.device-card::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: linear-gradient(180deg, #FF6B35 0%, #FF8C5E 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  border-radius: 12px 0 0 12px;
-}
-
-.device-card:hover {
-  background: rgba(255, 107, 53, 0.05);
-  border-color: rgba(255, 107, 53, 0.4);
-  transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.15);
-}
-
-.device-card:hover::before {
-  opacity: 1;
 }
 
 /* Legacy Styles for Modal */

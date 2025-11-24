@@ -6,9 +6,7 @@
         <!-- Logo y descripción -->
         <div class="footer-section">
           <div class="footer-logo">
-            <div class="logo-icon">
-              <i class="bi bi-geo-alt-fill"></i>
-            </div>
+            <i class="bi bi-broadcast text-xl"></i>
             <span class="logo-text">Re<span class="text-primary">GPS</span></span>
           </div>
           <p class="footer-description">
@@ -19,7 +17,7 @@
               <i class="bi bi-facebook"></i>
             </a>
             <a href="#" class="social-link" aria-label="Twitter">
-              <i class="bi bi-twitter"></i>
+              <i class="bi bi-twitter-x"></i>
             </a>
             <a href="#" class="social-link" aria-label="LinkedIn">
               <i class="bi bi-linkedin"></i>
@@ -36,22 +34,26 @@
           <ul class="footer-links">
             <li>
               <router-link to="/" class="footer-link">
-                <i class="bi bi-speedometer2"></i> Dashboard
+                <i class="bi bi-speedometer2"></i>
+                Dashboard
               </router-link>
             </li>
             <li>
               <router-link to="/historial" class="footer-link">
-                <i class="bi bi-clock-history"></i> Historial
+                <i class="bi bi-clock-history"></i>
+                Historial
               </router-link>
             </li>
             <li>
               <router-link to="/zonas" class="footer-link">
-                <i class="bi bi-geo-fill"></i> Zonas
+                <i class="bi bi-geo-alt-fill"></i>
+                Zonas
               </router-link>
             </li>
             <li>
               <router-link to="/alertas" class="footer-link">
-                <i class="bi bi-bell-fill"></i> Alertas
+                <i class="bi bi-bell-fill"></i>
+                Alertas
               </router-link>
             </li>
           </ul>
@@ -63,22 +65,26 @@
           <ul class="footer-links">
             <li>
               <a href="#" class="footer-link">
-                <i class="bi bi-book"></i> Documentación
+                <i class="bi bi-book-fill"></i>
+                Documentación
               </a>
             </li>
             <li>
               <a href="#" class="footer-link">
-                <i class="bi bi-question-circle"></i> Ayuda y Soporte
+                <i class="bi bi-question-circle-fill"></i>
+                Ayuda y Soporte
               </a>
             </li>
             <li>
               <a href="#" class="footer-link">
-                <i class="bi bi-code-square"></i> API
+                <i class="bi bi-code-slash"></i>
+                API
               </a>
             </li>
             <li>
               <a href="#" class="footer-link">
-                <i class="bi bi-shield-check"></i> Seguridad
+                <i class="bi bi-shield-check"></i>
+                Seguridad
               </a>
             </li>
           </ul>

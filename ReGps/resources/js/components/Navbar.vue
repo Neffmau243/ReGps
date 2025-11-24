@@ -4,223 +4,128 @@
       <!-- Logo -->
       <router-link to="/" class="navbar-logo">
         <div class="logo-icon">
-          <i class="bi bi-geo-alt-fill"></i>
+          <i class="bi bi-broadcast"></i>
         </div>
         <span class="logo-text">Re<span class="text-primary">GPS</span></span>
       </router-link>
       
       <!-- Desktop Navigation -->
-      <div class="navbar-menu desktop-menu">
-        <!-- Admin Navigation -->
+      <div class="desktop-menu">
         <template v-if="authStore.isAdmin">
-          <router-link 
-            to="/" 
-            class="nav-link"
-            :class="{ 'active': $route.path === '/' }"
-          >
+          <router-link to="/" class="nav-link" :class="{ 'active': $route.path === '/' }">
             <i class="bi bi-speedometer2"></i>
             <span>Dashboard</span>
           </router-link>
           
-          <router-link 
-            to="/historial" 
-            class="nav-link"
-            :class="{ 'active': $route.path === '/historial' }"
-          >
+          <router-link to="/historial" class="nav-link" :class="{ 'active': $route.path === '/historial' }">
             <i class="bi bi-clock-history"></i>
             <span>Historial</span>
           </router-link>
           
-          <router-link 
-            to="/zonas" 
-            class="nav-link"
-            :class="{ 'active': $route.path.startsWith('/zonas') }"
-          >
-            <i class="bi bi-geo-fill"></i>
+          <router-link to="/zonas" class="nav-link" :class="{ 'active': $route.path.startsWith('/zonas') }">
+            <i class="bi bi-geo-alt-fill"></i>
             <span>Zonas</span>
           </router-link>
           
-          <router-link 
-            to="/alertas" 
-            class="nav-link"
-            :class="{ 'active': $route.path === '/alertas' }"
-          >
+          <router-link to="/alertas" class="nav-link" :class="{ 'active': $route.path === '/alertas' }">
             <i class="bi bi-bell-fill"></i>
             <span>Alertas</span>
-            <span v-if="alertCount > 0" class="badge-notification">
-              {{ alertCount }}
-            </span>
+            <span v-if="alertCount > 0" class="badge-notification">{{ alertCount }}</span>
           </router-link>
           
-          <router-link 
-            to="/usuarios" 
-            class="nav-link"
-            :class="{ 'active': $route.path === '/usuarios' }"
-          >
-            <i class="bi bi-people-fill"></i>
+          <router-link to="/usuarios" class="nav-link" :class="{ 'active': $route.path === '/usuarios' }">
+            <i class="bi bi-person-fill"></i>
             <span>Usuarios</span>
           </router-link>
           
-          <router-link 
-            to="/dispositivos" 
-            class="nav-link"
-            :class="{ 'active': $route.path === '/dispositivos' }"
-          >
+          <router-link to="/dispositivos" class="nav-link" :class="{ 'active': $route.path === '/dispositivos' }">
             <i class="bi bi-phone-fill"></i>
             <span>Dispositivos</span>
           </router-link>
         </template>
         
-        <!-- Employee Navigation -->
         <template v-else>
-          <router-link 
-            to="/empleado" 
-            class="nav-link"
-            :class="{ 'active': $route.path === '/empleado' }"
-          >
-            <i class="bi bi-house-fill"></i>
+          <router-link to="/empleado" class="nav-link" :class="{ 'active': $route.path === '/empleado' }">
+            <i class="bi bi-speedometer2"></i>
             <span>Mi Panel</span>
           </router-link>
         </template>
       </div>
       
-      <!-- User Actions -->
-      <div class="navbar-actions">
-        <!-- User Info (Desktop) -->
+      <!-- Desktop User & Logout -->
+      <div class="desktop-actions">
         <div class="user-info">
           <p class="user-name">{{ authStore.user?.Nombre }}</p>
           <p class="user-role">{{ authStore.user?.Rol }}</p>
         </div>
         
-        <!-- Logout Button (Desktop) -->
-        <button 
-          @click="handleLogout"
-          class="btn-logout desktop-logout"
-        >
+        <button @click="handleLogout" class="btn-logout">
           <i class="bi bi-box-arrow-right"></i>
           <span>Salir</span>
         </button>
-        
-        <!-- Mobile Menu Toggle -->
-        <button 
-          @click="toggleMobileMenu"
-          class="mobile-menu-toggle"
-          :class="{ 'active': isMobileMenuOpen }"
-          aria-label="Toggle menu"
-        >
-          <span class="hamburger-line"></span>
-          <span class="hamburger-line"></span>
-          <span class="hamburger-line"></span>
-        </button>
       </div>
+        
+      <!-- Hamburger Button (Mobile) -->
+      <button @click="toggleMobileMenu" class="hamburger" :class="{ 'active': isMobileMenuOpen }">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
     
-    <!-- Mobile Menu Overlay -->
-    <Transition name="mobile-menu">
-      <div v-if="isMobileMenuOpen" class="mobile-menu-overlay" @click="closeMobileMenu">
-        <div class="mobile-menu" @click.stop>
-          <!-- User Info Mobile -->
-          <div class="mobile-user-info">
-            <div class="mobile-user-avatar">
-              <i class="bi bi-person-circle"></i>
-            </div>
-            <div>
-              <p class="mobile-user-name">{{ authStore.user?.Nombre }}</p>
-              <p class="mobile-user-role">{{ authStore.user?.Rol }}</p>
-            </div>
-          </div>
-          
-          <!-- Mobile Navigation -->
-          <nav class="mobile-nav">
-            <!-- Admin Navigation -->
-            <template v-if="authStore.isAdmin">
-              <router-link 
-                to="/" 
-                class="mobile-nav-link"
-                :class="{ 'active': $route.path === '/' }"
-                @click="closeMobileMenu"
-              >
-                <i class="bi bi-speedometer2"></i>
-                <span>Dashboard</span>
-              </router-link>
-              
-              <router-link 
-                to="/historial" 
-                class="mobile-nav-link"
-                :class="{ 'active': $route.path === '/historial' }"
-                @click="closeMobileMenu"
-              >
-                <i class="bi bi-clock-history"></i>
-                <span>Historial</span>
-              </router-link>
-              
-              <router-link 
-                to="/zonas" 
-                class="mobile-nav-link"
-                :class="{ 'active': $route.path.startsWith('/zonas') }"
-                @click="closeMobileMenu"
-              >
-                <i class="bi bi-geo-fill"></i>
-                <span>Zonas</span>
-              </router-link>
-              
-              <router-link 
-                to="/alertas" 
-                class="mobile-nav-link"
-                :class="{ 'active': $route.path === '/alertas' }"
-                @click="closeMobileMenu"
-              >
-                <i class="bi bi-bell-fill"></i>
-                <span>Alertas</span>
-                <span v-if="alertCount > 0" class="badge-notification">{{ alertCount }}</span>
-              </router-link>
-              
-              <router-link 
-                to="/usuarios" 
-                class="mobile-nav-link"
-                :class="{ 'active': $route.path === '/usuarios' }"
-                @click="closeMobileMenu"
-              >
-                <i class="bi bi-people-fill"></i>
-                <span>Usuarios</span>
-              </router-link>
-              
-              <router-link 
-                to="/dispositivos" 
-                class="mobile-nav-link"
-                :class="{ 'active': $route.path === '/dispositivos' }"
-                @click="closeMobileMenu"
-              >
-                <i class="bi bi-phone-fill"></i>
-                <span>Dispositivos</span>
-              </router-link>
-            </template>
-            
-            <!-- Employee Navigation -->
-            <template v-else>
-              <router-link 
-                to="/empleado" 
-                class="mobile-nav-link"
-                :class="{ 'active': $route.path === '/empleado' }"
-                @click="closeMobileMenu"
-              >
-                <i class="bi bi-house-fill"></i>
-                <span>Mi Panel</span>
-              </router-link>
-            </template>
-          </nav>
-          
-          <!-- Logout Mobile -->
-          <button 
-            @click="handleLogout"
-            class="btn-logout mobile-logout"
-          >
-            <i class="bi bi-box-arrow-right"></i>
-            <span>Cerrar Sesión</span>
-          </button>
-        </div>
+    <!-- Mobile Menu -->
+    <div v-if="isMobileMenuOpen" class="mobile-menu">
+      <div class="mobile-user">
+        <p class="mobile-user-name">{{ authStore.user?.Nombre }}</p>
+        <p class="mobile-user-role">{{ authStore.user?.Rol }}</p>
       </div>
-    </Transition>
+      
+      <div class="mobile-links">
+        <template v-if="authStore.isAdmin">
+          <router-link to="/" class="mobile-link" @click="closeMobileMenu">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+          </router-link>
+          
+          <router-link to="/historial" class="mobile-link" @click="closeMobileMenu">
+            <i class="bi bi-clock-history"></i>
+            <span>Historial</span>
+          </router-link>
+          
+          <router-link to="/zonas" class="mobile-link" @click="closeMobileMenu">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span>Zonas</span>
+          </router-link>
+          
+          <router-link to="/alertas" class="mobile-link" @click="closeMobileMenu">
+            <i class="bi bi-bell-fill"></i>
+            <span>Alertas</span>
+          </router-link>
+          
+          <router-link to="/usuarios" class="mobile-link" @click="closeMobileMenu">
+            <i class="bi bi-person-fill"></i>
+            <span>Usuarios</span>
+          </router-link>
+          
+          <router-link to="/dispositivos" class="mobile-link" @click="closeMobileMenu">
+            <i class="bi bi-phone-fill"></i>
+            <span>Dispositivos</span>
+          </router-link>
+        </template>
+        
+        <template v-else>
+          <router-link to="/empleado" class="mobile-link" @click="closeMobileMenu">
+            <i class="bi bi-speedometer2"></i>
+            <span>Mi Panel</span>
+          </router-link>
+        </template>
+      </div>
+      
+      <button @click="handleLogout" class="mobile-logout">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Cerrar Sesión</span>
+      </button>
+    </div>
   </nav>
 </template>
 
@@ -236,7 +141,6 @@ const isMobileMenuOpen = ref(false)
 
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
-  // Prevenir scroll cuando el menú está abierto
   if (isMobileMenuOpen.value) {
     document.body.style.overflow = 'hidden'
   } else {
@@ -257,10 +161,6 @@ const handleLogout = async () => {
 </script>
 
 <style scoped>
-/* ===============================================
-   NAVBAR BASE
-   =============================================== */
-
 .navbar {
   background: linear-gradient(135deg, var(--color-dark-100) 0%, var(--color-dark) 100%);
   border-bottom: 1px solid rgba(255, 107, 53, 0.2);
@@ -286,7 +186,7 @@ const handleLogout = async () => {
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
-  transition: transform var(--transition-fast);
+  transition: transform 0.2s ease;
 }
 
 .navbar-logo:hover {
@@ -296,7 +196,7 @@ const handleLogout = async () => {
 .logo-icon {
   width: 2.5rem;
   height: 2.5rem;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  background: linear-gradient(135deg, #FF6B35 0%, #e85a2a 100%);
   border-radius: 0.625rem;
   display: flex;
   align-items: center;
@@ -312,8 +212,12 @@ const handleLogout = async () => {
   color: white;
 }
 
-/* Desktop Navigation */
-.navbar-menu {
+.text-primary {
+  color: #FF6B35;
+}
+
+/* Desktop Menu */
+.desktop-menu {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -324,12 +228,12 @@ const handleLogout = async () => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 1rem;
-  border-radius: var(--radius-md);
-  color: var(--color-gray-400);
+  border-radius: 0.5rem;
+  color: #9ca3af;
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 500;
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
   position: relative;
 }
 
@@ -339,7 +243,7 @@ const handleLogout = async () => {
 }
 
 .nav-link.active {
-  color: var(--color-primary);
+  color: #FF6B35;
   background-color: rgba(255, 107, 53, 0.1);
 }
 
@@ -349,7 +253,7 @@ const handleLogout = async () => {
 
 .badge-notification {
   padding: 0.125rem 0.5rem;
-  background-color: var(--color-danger);
+  background-color: #ef4444;
   color: white;
   font-size: 0.75rem;
   font-weight: 700;
@@ -358,8 +262,8 @@ const handleLogout = async () => {
   text-align: center;
 }
 
-/* User Actions */
-.navbar-actions {
+/* Desktop Actions */
+.desktop-actions {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -373,11 +277,13 @@ const handleLogout = async () => {
   font-size: 0.875rem;
   font-weight: 600;
   color: white;
+  margin: 0;
 }
 
 .user-role {
   font-size: 0.75rem;
-  color: var(--color-gray-400);
+  color: #9ca3af;
+  margin: 0;
 }
 
 .btn-logout {
@@ -386,13 +292,13 @@ const handleLogout = async () => {
   gap: 0.5rem;
   padding: 0.625rem 1rem;
   background-color: rgba(239, 68, 68, 0.1);
-  color: var(--color-danger);
+  color: #ef4444;
   border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: var(--radius-md);
+  border-radius: 0.5rem;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .btn-logout:hover {
@@ -400,188 +306,147 @@ const handleLogout = async () => {
   transform: translateY(-2px);
 }
 
-/* Mobile Menu Toggle */
-.mobile-menu-toggle {
+/* Hamburger */
+.hamburger {
   display: none;
   flex-direction: column;
   justify-content: space-between;
-  width: 2rem;
-  height: 1.5rem;
+  width: 1.75rem;
+  height: 1.25rem;
   background: transparent;
   border: none;
   cursor: pointer;
   padding: 0;
 }
 
-.hamburger-line {
+.hamburger span {
   width: 100%;
-  height: 3px;
+  height: 2px;
   background-color: white;
   border-radius: 2px;
-  transition: all var(--transition-fast);
+  transition: all 0.3s ease;
 }
 
-.mobile-menu-toggle.active .hamburger-line:nth-child(1) {
-  transform: translateY(9px) rotate(45deg);
+.hamburger.active span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
 }
 
-.mobile-menu-toggle.active .hamburger-line:nth-child(2) {
+.hamburger.active span:nth-child(2) {
   opacity: 0;
 }
 
-.mobile-menu-toggle.active .hamburger-line:nth-child(3) {
-  transform: translateY(-9px) rotate(-45deg);
+.hamburger.active span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 /* Mobile Menu */
-.mobile-menu-overlay {
+.mobile-menu {
   position: fixed;
   top: 4rem;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(5px);
+  background: linear-gradient(180deg, #1a1d23 0%, #0f1115 100%);
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
   z-index: 999;
 }
 
-.mobile-menu {
-  background: linear-gradient(180deg, var(--color-dark-100) 0%, var(--color-dark) 100%);
-  width: 85%;
-  max-width: 20rem;
-  height: 100%;
-  margin-left: auto;
-  padding: 1.5rem;
-  overflow-y: auto;
-  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
-}
-
-.mobile-user-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+.mobile-user {
   padding: 1rem;
-  background-color: var(--color-dark-200);
-  border-radius: var(--radius-lg);
-  margin-bottom: 1.5rem;
-}
-
-.mobile-user-avatar {
-  font-size: 2.5rem;
-  color: var(--color-primary);
+  background: rgba(255, 107, 53, 0.1);
+  border: 1px solid rgba(255, 107, 53, 0.3);
+  border-radius: 12px;
 }
 
 .mobile-user-name {
   font-size: 1rem;
   font-weight: 700;
   color: white;
+  margin: 0 0 0.25rem 0;
 }
 
 .mobile-user-role {
   font-size: 0.875rem;
-  color: var(--color-gray-400);
+  color: #FF6B35;
+  font-weight: 500;
+  margin: 0;
 }
 
-.mobile-nav {
+.mobile-links {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  flex: 1;
 }
 
-.mobile-nav-link {
+.mobile-link {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 1rem;
-  border-radius: var(--radius-md);
-  color: var(--color-gray-400);
+  border-radius: 10px;
+  color: #d1d5db;
   text-decoration: none;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: all var(--transition-fast);
-  position: relative;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
 }
 
-.mobile-nav-link:hover {
+.mobile-link:hover,
+.mobile-link.router-link-active {
   color: white;
   background-color: rgba(255, 107, 53, 0.1);
+  border-color: rgba(255, 107, 53, 0.2);
 }
 
-.mobile-nav-link.active {
-  color: var(--color-primary);
-  background-color: rgba(255, 107, 53, 0.1);
-}
-
-.mobile-nav-link i {
+.mobile-link i {
   font-size: 1.25rem;
   width: 1.5rem;
 }
 
 .mobile-logout {
   width: 100%;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 0.75rem;
   padding: 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 10px;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* Transiciones del menú móvil */
-.mobile-menu-enter-active,
-.mobile-menu-leave-active {
-  transition: opacity var(--transition-normal);
+.mobile-logout:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
 }
 
-.mobile-menu-enter-from,
-.mobile-menu-leave-to {
-  opacity: 0;
-}
-
-.mobile-menu-enter-active .mobile-menu,
-.mobile-menu-leave-active .mobile-menu {
-  transition: transform var(--transition-normal);
-}
-
-.mobile-menu-enter-from .mobile-menu,
-.mobile-menu-leave-to .mobile-menu {
-  transform: translateX(100%);
-}
-
-/* ===============================================
-   RESPONSIVE DESIGN
-   =============================================== */
-
-/* Mobile (< 768px) */
+/* Responsive */
 @media (max-width: 768px) {
   .desktop-menu,
-  .user-info,
-  .desktop-logout {
+  .desktop-actions {
     display: none;
   }
 
-  .mobile-menu-toggle {
+  .hamburger {
     display: flex;
   }
 }
 
-/* Tablet (769px - 1024px) */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .nav-link span {
-    display: none;
-  }
-
-  .navbar-menu {
-    gap: 0.25rem;
-  }
-
-  .nav-link {
-    padding: 0.625rem;
-  }
-}
-
-/* Desktop (> 1024px) */
-@media (min-width: 1025px) {
-  .mobile-menu-toggle,
-  .mobile-menu-overlay {
-    display: none;
+@media (min-width: 769px) {
+  .hamburger,
+  .mobile-menu {
+    display: none !important;
   }
 }
 </style>
