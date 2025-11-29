@@ -32,7 +32,7 @@ class UsuarioController extends Controller
             'Estado' => 'in:Activo,Inactivo'
         ]);
 
-        $validated['Contraseña'] = Hash::make($validated['Contraseña']);
+        // NO hashear aquí - el mutador del modelo lo hace automáticamente
         $usuario = Usuario::create($validated);
         
         // Crear automáticamente el registro en empleados para TODOS los usuarios
@@ -71,10 +71,8 @@ class UsuarioController extends Controller
             'Estado' => 'in:Activo,Inactivo'
         ]);
 
-        if (isset($validated['Contraseña'])) {
-            $validated['Contraseña'] = Hash::make($validated['Contraseña']);
-        }
-
+        // NO hashear aquí - el mutador del modelo lo hace automáticamente
+        // Si la contraseña está presente en $validated, el mutador la hasheará
         $usuario->update($validated);
         return response()->json($usuario);
     }

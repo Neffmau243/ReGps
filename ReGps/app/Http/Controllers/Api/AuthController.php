@@ -21,14 +21,27 @@ class AuthController extends Controller
         ]);
 
         $usuario = Usuario::where('Email', $request->Email)->first();
+        
+        // DEBUG: Log para verificación
+        \Log::info('=== LOGIN ATTEMPT ===');
+        \Log::info('Email: ' . $request->Email);
+        \Log::info('Usuario encontrado: ' . ($usuario ? 'SI' : 'NO'));
+        
+        if ($usuario) {
+            \Log::info('Hash en BD: ' . substr($usuario->Contraseña, 0, 30) . '...');
+            \Log::info('Contraseña ingresada: ' . $request->Contraseña);
+            \Log::info('Hash check result: ' . (Hash::check($request->Contraseña, $usuario->Contraseña) ? 'PASS' : 'FAIL'));
+        }
 
         if (!$usuario || !Hash::check($request->Contraseña, $usuario->Contraseña)) {
+            \Log::warning('Login fallido - credenciales incorrectas');
             throw ValidationException::withMessages([
                 'Email' => ['Las credenciales son incorrectas.'],
             ]);
         }
 
         if ($usuario->Estado !== 'Activo') {
+            \Log::warning('Login fallido - usuario inactivo');
             return response()->json([
                 'message' => 'Usuario inactivo. Contacte al administrador.'
             ], 403);
@@ -44,6 +57,8 @@ class AuthController extends Controller
         $token = $usuario->createToken('auth-token', [
             $usuario->Rol === 'Administrador' ? '*' : 'empleado'
         ])->plainTextToken;
+        
+        \Log::info('Login exitoso para: ' . $usuario->Email);
 
         return response()->json([
             'message' => 'Login exitoso',

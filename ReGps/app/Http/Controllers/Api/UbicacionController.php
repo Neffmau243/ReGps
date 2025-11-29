@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ubicacion;
+use App\Events\UbicacionActualizada;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -36,6 +37,9 @@ class UbicacionController extends Controller
         
         // Verificar geofencing automáticamente
         $this->verificarGeofencing($ubicacion);
+        
+        // Transmitir la actualización por WebSocket
+        broadcast(new UbicacionActualizada($ubicacion))->toOthers();
         
         return response()->json($ubicacion, 201);
     }

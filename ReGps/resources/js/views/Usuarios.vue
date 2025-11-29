@@ -61,7 +61,7 @@
       </div>
       
       <!-- Users List -->
-      <div class="space-y-4">
+      <div class="space-y-6">
         <div 
           v-for="usuario in filteredUsuarios" 
           :key="usuario.UsuarioID"
@@ -71,7 +71,7 @@
             <div class="flex items-start flex-1">
               <!-- Content -->
               <div class="flex-1">
-                <div class="flex items-center space-x-3 mb-2">
+                <div class="flex items-center gap-4 mb-4">
                   <h3 class="text-lg font-bold text-white">{{ usuario.Nombre }}</h3>
                   <span :class="getRoleBadge(usuario.Rol)">
                     {{ usuario.Rol }}
@@ -81,13 +81,13 @@
                   </span>
                 </div>
                 
-                <p class="text-gray-300 mb-3 flex items-center gap-2">
+                <p class="text-gray-300 mb-4 flex items-center gap-3">
                   <i class="bi bi-envelope-fill text-gray-400"></i>
                   {{ usuario.Email }}
                 </p>
                 
-                <div class="flex items-center space-x-6 text-sm text-gray-400">
-                  <div class="flex items-center space-x-2">
+                <div class="flex items-center gap-8 text-sm text-gray-400">
+                  <div class="flex items-center gap-2.5">
                     <i class="bi bi-hash"></i>
                     <span>ID: #{{ usuario.UsuarioID }}</span>
                   </div>
@@ -100,7 +100,7 @@
             </div>
             
             <!-- Actions -->
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3">
               <button 
                 @click="editUser(usuario)"
                 class="action-btn edit"
@@ -135,106 +135,124 @@
     </div>
     
     <!-- Create/Edit Modal -->
-    <div v-if="showCreateModal || editingUser" class="modal-overlay" @click.self="closeModal">
-      <div class="modal-content">
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <div class="flex items-center gap-3">
-            <h3 class="text-2xl font-bold text-white">
+    <div v-if="showCreateModal || editingUser" class="modal-overlay">
+      <div class="modal-container" @click.self="closeModal">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="p-6 border-b border-primary/20 flex items-center justify-between">
+            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+              <i class="bi" :class="editingUser ? 'bi-pencil-square' : 'bi-person-plus-fill'"></i>
               {{ editingUser ? 'Editar Usuario' : 'Nuevo Usuario' }}
             </h3>
-          </div>
-          <button @click="closeModal" class="modal-close">
-          </button>
-        </div>
-        
-        <!-- Modal Body -->
-        <form @submit.prevent="handleSubmit" class="modal-body">
-          <div class="form-group">
-            <label class="form-label">
-              <i class="bi bi-person-fill"></i> Nombre Completo *
-            </label>
-            <input 
-              v-model="form.Nombre"
-              type="text" 
-              required
-              class="form-input"
-              placeholder="Ej: Juan Pérez García"
-            />
+            <button @click="closeModal" class="text-gray-400 hover:text-white transition-colors">
+              <i class="bi bi-x-lg"></i>
+            </button>
           </div>
           
-          <div class="form-group">
-            <label class="form-label">
-              <i class="bi bi-envelope-fill"></i> Email *
-            </label>
-            <input 
-              v-model="form.Email"
-              type="email" 
-              required
-              class="form-input"
-              placeholder="ejemplo@regps.com"
-            />
-          </div>
-          
-          <div v-if="!editingUser" class="form-group">
-            <label class="form-label">
-              <i class="bi bi-key-fill"></i> Contraseña *
-            </label>
-            <input 
-              v-model="form.Contraseña"
-              type="password" 
-              required
-              class="form-input"
-              placeholder="Mínimo 8 caracteres"
-            />
-          </div>
-          
-          <div class="grid grid-cols-2 gap-4">
-            <div class="form-group">
-              <label class="form-label">
-                <i class="bi bi-shield-fill"></i> Rol *
+          <form @submit.prevent="handleSubmit" class="p-6 space-y-4">
+            <div>
+              <label class="label">
+                <i class="bi bi-person-fill"></i>
+                Nombre Completo *
               </label>
-              <select v-model="form.Rol" required class="form-input">
+              <input 
+                v-model="form.Nombre"
+                type="text" 
+                required
+                class="input-field"
+                placeholder="Ej: Juan Pérez García"
+              />
+            </div>
+            
+            <div>
+              <label class="label">
+                <i class="bi bi-envelope-fill"></i>
+                Email *
+              </label>
+              <input 
+                v-model="form.Email"
+                type="email" 
+                required
+                class="input-field"
+                placeholder="ejemplo@regps.com"
+              />
+            </div>
+            
+            <div v-if="!editingUser">
+              <label class="label">
+                <i class="bi bi-key-fill"></i>
+                Contraseña *
+              </label>
+              <input 
+                v-model="form.Contraseña"
+                type="password" 
+                required
+                class="input-field"
+                placeholder="Mínimo 8 caracteres"
+              />
+            </div>
+            
+            <div v-else>
+              <label class="label">
+                <i class="bi bi-key-fill"></i>
+                Nueva Contraseña (opcional)
+              </label>
+              <input 
+                v-model="form.Contraseña"
+                type="password" 
+                class="input-field"
+                placeholder="Dejar en blanco para mantener la actual"
+              />
+              <p class="text-xs text-gray-400 mt-1">
+                💡 Solo completa este campo si deseas cambiar la contraseña
+              </p>
+            </div>
+            
+            <div>
+              <label class="label">
+                <i class="bi bi-shield-fill"></i>
+                Rol *
+              </label>
+              <select v-model="form.Rol" required class="input-field">
                 <option value="" disabled>Seleccionar rol</option>
                 <option value="Administrador">👑 Administrador</option>
                 <option value="Empleado">👤 Empleado</option>
               </select>
             </div>
             
-            <div class="form-group">
-              <label class="form-label">
-                Estado
-              </label>
-              <select v-model="form.Estado" class="form-input">
+            <div>
+              <label class="label">Estado</label>
+              <select v-model="form.Estado" class="input-field">
                 <option value="Activo">✅ Activo</option>
                 <option value="Inactivo">⛔ Inactivo</option>
               </select>
             </div>
-          </div>
-          
-          <!-- Modal Footer -->
-          <div class="flex gap-3 pt-6 border-t border-gray-700/50">
-            <button 
-              type="submit"
-              :disabled="loading"
-              class="btn-primary flex-1"
-            >
-              <span v-if="!loading" class="flex items-center justify-center">
-                <i class="bi bi-check-circle-fill"></i> {{ editingUser ? 'Actualizar Usuario' : 'Crear Usuario' }}
-              </span>
-              <span v-else class="flex items-center justify-center">
-                Guardando...
-              </span>
-            </button>
-            <button 
-              type="button"
-              @click="closeModal"
-              class="btn-secondary px-8"
-            >
-              <i class="bi bi-x-circle-fill"></i> Cancelar
-            </button>
-          </div>
-        </form>
+            
+            <div class="flex space-x-3 pt-4">
+              <button 
+                type="submit"
+                :disabled="loading"
+                class="btn-primary flex-1"
+              >
+                <span v-if="!loading">
+                  <i class="bi bi-check-circle-fill"></i>
+                  {{ editingUser ? 'Actualizar' : 'Crear' }}
+                </span>
+                <span v-else>
+                  Guardando...
+                </span>
+              </button>
+              <button 
+                type="button"
+                @click="closeModal"
+                class="btn-secondary"
+              >
+                <i class="bi bi-x-circle-fill"></i>
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -330,7 +348,20 @@ const handleSubmit = async () => {
   
   try {
     if (editingUser.value) {
-      await api.put(`/usuarios/${editingUser.value.UsuarioID}`, form.value)
+      // Preparar datos para edición
+      const updateData: any = {
+        Nombre: form.value.Nombre,
+        Email: form.value.Email,
+        Rol: form.value.Rol,
+        Estado: form.value.Estado
+      }
+      
+      // Solo incluir contraseña si se proporcionó una nueva
+      if (form.value.Contraseña && form.value.Contraseña.trim() !== '') {
+        updateData.Contraseña = form.value.Contraseña
+      }
+      
+      await api.put(`/usuarios/${editingUser.value.UsuarioID}`, updateData)
     } else {
       await api.post('/usuarios', form.value)
     }
@@ -438,6 +469,140 @@ const getStatusBadge = (estado: string) => {
   .usuario-card .action-btn {
     width: 36px;
     height: 36px;
+  }
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.90);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.modal-container {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 20px 0;
+}
+
+.modal-content {
+  background: #000000;
+  border: 2px solid rgba(255, 107, 53, 0.3);
+  border-radius: 16px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modal-enter 0.3s ease-out;
+  box-shadow: 0 20px 60px rgba(255, 107, 53, 0.2), 0 0 100px rgba(0, 0, 0, 0.5);
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 8px;
+}
+
+.label i {
+  color: #FF6B35;
+  font-size: 16px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  color: white;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #FF6B35;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.input-field:hover {
+  border-color: rgba(255, 107, 53, 0.3);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.input-field::placeholder {
+  color: #6b7280;
+}
+
+.btn-primary {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8C5E 100%);
+  color: white;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 107, 53, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  border-color: rgba(255, 107, 53, 0.5);
+  background: rgba(255, 107, 53, 0.1);
+  transform: translateY(-1px);
+}
+
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 

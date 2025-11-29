@@ -66,28 +66,28 @@
             </span>
           </div>
           
-          <div class="space-y-2 mb-4">
-            <div class="flex items-center text-sm gap-2">
-              <i class="bi bi-diagram-3-fill text-gray-400"></i>
+          <div class="space-y-4 mb-6">
+            <div class="flex items-center text-sm gap-8">
+              <i class="bi bi-diagram-3-fill text-gray-400 text-lg w-5"></i>
               <span class="text-gray-300">{{ zona.TipoGeometria }}</span>
             </div>
             
-            <div v-if="zona.Radio" class="flex items-center text-sm gap-2">
-              <i class="bi bi-circle text-gray-400"></i>
+            <div v-if="zona.Radio" class="flex items-center text-sm gap-8">
+              <i class="bi bi-circle text-gray-400 text-lg w-5"></i>
               <span class="text-gray-300">Radio: {{ zona.Radio }}m</span>
             </div>
             
-            <div v-if="zona.HorarioInicio && zona.HorarioFin" class="flex items-center text-sm gap-2">
-              <i class="bi bi-clock-fill text-gray-400"></i>
+            <div v-if="zona.HorarioInicio && zona.HorarioFin" class="flex items-center text-sm gap-8">
+              <i class="bi bi-clock-fill text-gray-400 text-lg w-5"></i>
               <span class="text-gray-300">{{ zona.HorarioInicio }} - {{ zona.HorarioFin }}</span>
             </div>
           </div>
           
-          <p v-if="zona.Descripcion" class="text-gray-400 text-sm mb-4">
+          <p v-if="zona.Descripcion" class="text-gray-400 text-sm mb-6 leading-relaxed">
             {{ zona.Descripcion }}
           </p>
           
-          <div class="flex items-center justify-end gap-2 pt-4 border-t border-primary/20">
+          <div class="flex items-center justify-end gap-4 pt-5 border-t border-primary/20">
             <router-link 
               :to="`/zonas/editar/${zona.ZonaID}`"
               class="action-btn edit"
@@ -95,13 +95,6 @@
             >
               <i class="bi bi-pencil-fill"></i>
             </router-link>
-            <button 
-              @click="viewOnMap(zona)"
-              class="action-btn toggle"
-              title="Ver en mapa"
-            >
-              <i class="bi bi-map-fill"></i>
-            </button>
             <button 
               v-if="authStore.isAdmin"
               @click="deleteZone(zona.ZonaID)"
@@ -114,8 +107,16 @@
         </div>
       </div>
       
+      <!-- Loading State -->
+      <div v-if="loading" class="flex items-center justify-center py-16">
+        <div class="text-center">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p class="text-gray-400">Cargando zonas...</p>
+        </div>
+      </div>
+      
       <!-- Empty State -->
-      <div v-if="filteredZonas.length === 0" class="bg-dark-100 rounded-xl border border-primary/20 p-12 text-center">
+      <div v-else-if="filteredZonas.length === 0 && !loading" class="bg-dark-100 rounded-xl border border-primary/20 p-12 text-center">
         <h3 class="text-xl font-bold text-white mb-2">No hay zonas</h3>
         <p class="text-gray-400 mb-6">Crea tu primera zona de geofencing</p>
         <router-link 
@@ -167,6 +168,7 @@ interface Zona {
 
 const authStore = useAuthStore()
 const zonas = ref<Zona[]>([])
+const loading = ref(true)
 const searchQuery = ref('')
 const filterType = ref('')
 const filterStatus = ref('')
@@ -188,11 +190,14 @@ onMounted(async () => {
 })
 
 const loadZonas = async () => {
+  loading.value = true
   try {
     const response = await api.get('/zonas')
     zonas.value = response.data
   } catch (error) {
     console.error('Error loading zones:', error)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -324,57 +329,7 @@ const deleteZone = async (id: number) => {
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.35);
 }
 
-.action-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  border: 1px solid;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 15px;
-}
-
-.action-btn:hover {
-  transform: translateY(-3px) scale(1.1);
-}
-
-.action-btn.edit {
-  color: #60a5fa;
-  border-color: rgba(96, 165, 250, 0.3);
-}
-
-.action-btn.edit:hover {
-  background: rgba(96, 165, 250, 0.15);
-  border-color: rgba(96, 165, 250, 0.5);
-  box-shadow: 0 8px 16px rgba(96, 165, 250, 0.3);
-}
-
-.action-btn.toggle {
-  color: #10b981;
-  border-color: rgba(16, 185, 129, 0.3);
-}
-
-.action-btn.toggle:hover {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: rgba(16, 185, 129, 0.5);
-  box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
-}
-
-.action-btn.delete {
-  color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.3);
-}
-
-.action-btn.delete:hover {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.5);
-  box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
-}
-
+/* Zone Card - Specific to Zonas view */
 .zone-card {
   background: transparent;
   border-radius: 12px;

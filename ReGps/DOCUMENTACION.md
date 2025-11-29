@@ -8,23 +8,32 @@ Para iniciar el servidor de desarrollo localmente:
 # Navegar al directorio del proyecto
 cd c:\Users\Neff_PM\Documents\ChambitasUwU\ReGps\ReGps
 
-# Iniciar el servidor de desarrollo
+# Terminal 1: Iniciar servidor WebSocket (Reverb)
+php artisan reverb:start
+
+# Terminal 2: Iniciar servidor Laravel
 php artisan serve
+
+# Terminal 3: Compilar assets en desarrollo (opcional)
+npm run dev
 
 # Acceder en el navegador:
 # http://127.0.0.1:8000
 ```
 
-**Nota:** Asegúrate de tener todas las dependencias instaladas y el archivo `.env` configurado correctamente antes de iniciar el servidor.
+**Nota:** 
+- ⚠️ **Es OBLIGATORIO iniciar Reverb** (`php artisan reverb:start`) antes de usar la aplicación para que funcionen las actualizaciones en tiempo real.
+- Asegúrate de tener todas las dependencias instaladas y el archivo `.env` configurado correctamente.
+- Necesitarás 2 terminales simultáneas: una para Reverb (puerto 8080) y otra para Laravel (puerto 8000).
 
 ---
 
 ## 📊 Estado del Proyecto
 
-**Fecha de actualización:** 20 de Noviembre, 2025  
+**Fecha de actualización:** 27 de Noviembre, 2025  
 **Estado:** En Desarrollo Activo  
-**Completitud Backend:** 100%  
-**Completitud Frontend:** ~70%
+**Completitud Backend:** ~85% (Módulos Core Completos)  
+**Completitud Frontend:** ~90%
 
 ### Stack Tecnológico
 
@@ -40,41 +49,406 @@ php artisan serve
 ### Módulos Implementados
 
 #### Backend ✅
-- ✅ **Autenticación:** Login, Logout, Perfil
-- ✅ **Usuarios:** Gestión completa de usuarios
-- ✅ **Empleados:** Gestión de empleados
-- ✅ **Dispositivos:** Gestión básica de dispositivos GPS
-- ✅ **Ubicaciones:** Registro y consulta de ubicaciones
-- ✅ **Zonas:** Gestión de geocercas/zonas
-- ✅ **Alertas:** Sistema de alertas automáticas
-- ✅ **Historial de Zonas:** Registro de entrada/salida
+- ✅ **Autenticación:** Login, Logout, Perfil (Laravel Sanctum)
+- ✅ **Usuarios:** CRUD completo con roles (Administrador/Empleado)
+- ✅ **Empleados:** Gestión completa de empleados
+- ✅ **Dispositivos:** CRUD completo con relación a empleados
+- ✅ **Ubicaciones:** Registro, consulta y optimización con índices
+- ✅ **Zonas:** Gestión de geocercas (Círculos y Polígonos)
+- ✅ **Checkpoints:** Implementados como tipo de zona
+- ✅ **Alertas:** Sistema automático con prioridades (Baja/Media/Alta/Crítica)
+- ✅ **Historial de Zonas:** Registro de entrada/salida de dispositivos
+- ✅ **Permisos y Roles:** Sistema de permisos basado en roles
+- ✅ **WebSockets:** Laravel Reverb para actualizaciones en tiempo real
 
 #### Frontend 🚧
-- ✅ **Autenticación completar** con store Pinia
+- ✅ **Autenticación completa** con store Pinia
 - ✅ **Navegación responsive** con menú hamburguesa móvil
 - ✅ **Componentes UI profesionales** (Modal, Card, Button, Loading)
 - ✅ **Footer** con enlaces y contacto
 - ✅ **Vistas principales:** Dashboard, Usuarios, Dispositivos, Historial, Zonas, Alertas
 - ✅ **Tema consistente:** Negro/Naranja con diseño moderno
-- ⏳ **Integración completa de mapas**
+- ✅ **Modales elegantes:** Sistema de modales centrados con animaciones suaves
+- ✅ **Gestión de Dispositivos:** Interfaz completa con acciones (Ver ubicación, Editar, Eliminar)
+- ✅ **Gestión de Usuarios:** CRUD completo con roles y estados
+- ✅ **Gestión de Zonas:** Crear/Editar zonas con mapa interactivo de Leaflet
+- ✅ **Integración de mapas:** Leaflet.js funcionando correctamente
 - ⏳ **Rastreo GPS en tiempo real**
 
 ### Módulos Pendientes
 
 **Backend:**
-- ❌ **Vehículos:** Tabla `vehicles` (Falta Modelo y Controlador)
-- ❌ **Viajes:** Tabla `trips` para gestión de rutas
-- ❌ **Checkpoints:** Puntos de control en rutas
-- ❌ **Empresas:** Tabla `companies` para multi-tenancy
-- ❌ **Notificaciones:** Sistema de notificaciones push
-- ❌ **Reportes:** Generación de reportes programados
-- ❌ **Mantenimiento:** Tabla `device_maintenances`
-- ❌ **Tipos de Dispositivo:** Tabla `device_types`
+- ❌ **Vehículos:** Tabla `vehicles` (Modelo, Controlador y Migración)
+- ❌ **Viajes/Rutas:** Tabla `trips` para gestión de trayectos planificados
+- ❌ **Empresas:** Tabla `companies` para multi-tenancy (múltiples clientes)
+- ❌ **Notificaciones:** Sistema de notificaciones push en tiempo real
+- ❌ **Reportes Programados:** Generación automática de reportes PDF/Excel
+- ❌ **Mantenimiento:** Tabla `device_maintenances` para registro de servicios
+- ❌ **Tipos de Dispositivo:** Tabla `device_types` para categorización
+- ❌ **Combustible:** Tabla `fuel_records` para monitoreo de consumo
 
 **Frontend:**
 - ⏳ Exportación de reportes PDF/Excel
-- ⏳ WebSockets para actualizaciones en tiempo real
+- ✅ **WebSockets para actualizaciones en tiempo real** (Laravel Reverb + Echo)
 - ⏳ Notificaciones push del navegador
+- ✅ **Vista de Dashboard con mapas en tiempo real**
+
+---
+
+## 🎨 Mejoras Recientes de UI/UX (Nov 26, 2025)
+
+### Sistema de Modales Mejorado
+- **Diseño consistente:** Todos los modales (Dispositivos, Usuarios, Zonas) con el mismo estilo elegante
+- **Colores del tema:** Fondo negro puro (#000000) con bordes naranjas (#FF6B35)
+- **Animaciones suaves:** Entrada con escala y desplazamiento
+- **Centrado perfecto:** Modales siempre centrados en la pantalla con `position: fixed`
+- **Backdrop oscuro:** Fondo con desenfoque (`backdrop-filter: blur(8px)`)
+- **Iconos contextuales:** Íconos naranjas en labels y headers dinámicos
+
+### Vista de Dispositivos
+- **Botones de acción mejorados:**
+  - 📍 Ver Ubicación (naranja) - Redirige al dashboard
+  - ✏️ Editar (azul) - Modal elegante
+  - 🗑️ Eliminar (rojo)
+- **Modal de edición:** Sistema de modal centrado reemplazando la expansión inline
+
+### Vista de Usuarios
+- **CRUD completo:** Crear, leer, actualizar y eliminar usuarios
+- **Gestión de roles:** Administrador y Empleado con emojis (👑 👤)
+- **Estados visuales:** Activo ✅ / Inactivo ⛔
+- **Modal modernizado:** Mismo estilo que dispositivos
+
+### Vista de Zonas (Geofencing)
+- **Mapa interactivo:** Leaflet.js integrado correctamente con iconos personalizados
+- **Creación de zonas:**
+  - Círculos: Click para colocar centro, definir radio
+  - Polígonos: Click para agregar puntos, doble-click para finalizar
+- **Edición de zonas:** Carga y muestra zonas existentes en el mapa
+- **Estilos de mapa:** Tema oscuro consistente con filtros de brillo
+- **Instrucciones contextuales:** Guías según el tipo de geometría seleccionada
+- **Checkpoints permanentes:** Opción para crear checkpoints 24/7 sin horarios
+- **Marcadores únicos:** Sistema mejorado que evita duplicación de marcadores
+- **Botones mejorados:** Botones con gradientes, íconos y animaciones profesionales
+- **Manejo de errores:** Mensajes de error detallados del backend
+
+### Paleta de Colores Consistente
+```css
+- Primario: #FF6B35 (Naranja)
+- Secundario: #FF8C5E (Naranja claro)
+- Fondo: #000000 (Negro puro)
+- Fondo alternativo: #0f1419 (Negro suave)
+- Texto: #ffffff (Blanco)
+- Texto secundario: #9ca3af (Gris)
+- Bordes: rgba(255, 107, 53, 0.3) (Naranja transparente)
+```
+
+---
+
+## 🔌 Sistema de WebSockets para Tiempo Real (Nov 26, 2025)
+
+### Implementación Completa
+
+#### Backend - Laravel Reverb + Pusher
+- **Laravel Reverb 1.6.2:** Servidor WebSocket nativo de Laravel instalado
+- **Pusher PHP Server 7.2.7:** Cliente PHP para broadcasting
+- **Event Broadcasting:** Sistema de eventos con `ShouldBroadcast`
+
+##### Evento de Ubicación Actualizada
+Archivo: `app/Events/UbicacionActualizada.php`
+```php
+class UbicacionActualizada implements ShouldBroadcast
+{
+    public function broadcastOn(): Channel
+    {
+        return new Channel('ubicaciones');
+    }
+    
+    public function broadcastWith(): array
+    {
+        return [
+            'UbicacionID' => $this->ubicacion->UbicacionID,
+            'DispositivoID' => $this->ubicacion->DispositivoID,
+            'Latitud' => $this->ubicacion->Latitud,
+            'Longitud' => $this->ubicacion->Longitud,
+            'FechaHora' => $this->ubicacion->FechaHora,
+            'dispositivo' => $this->ubicacion->dispositivo,
+            'empleado' => $this->ubicacion->dispositivo?->empleado,
+        ];
+    }
+}
+```
+
+##### Broadcast desde Controlador
+Archivo: `app/Http/Controllers/Api/UbicacionController.php`
+```php
+public function store(Request $request)
+{
+    // ... validación y creación ...
+    
+    // Broadcast en tiempo real
+    broadcast(new UbicacionActualizada($ubicacion))->toOthers();
+    
+    return response()->json($ubicacion->load('dispositivo.empleado'), 201);
+}
+```
+
+#### Frontend - Laravel Echo + Vue Composable
+
+##### Composable de Rastreo en Tiempo Real
+Archivo: `resources/js/composables/useRealTimeTracking.ts`
+
+**Características:**
+- 🔌 Conexión/desconexión automática a WebSocket
+- 📡 Suscripción al canal `ubicaciones`
+- 💾 Almacenamiento en Map para eficiencia
+- ✅ Estado de conexión reactivo
+- 🔄 Manejo de actualizaciones incrementales
+
+**API del Composable:**
+```typescript
+const {
+  conectar,          // Conectar a WebSocket
+  desconectar,       // Desconectar
+  lastUpdate,        // Ref con última actualización
+  isConnected,       // Ref booleano de estado
+  getUbicacion,      // Obtener ubicación por dispositivo
+  getAllUbicaciones  // Obtener todas las ubicaciones
+} = useRealTimeTracking()
+```
+
+##### Integración en Dashboard
+Archivo: `resources/js/views/Dashboard.vue`
+
+**Funcionalidades implementadas:**
+1. **Conexión automática:** Se conecta al montar el componente
+2. **Desconexión limpia:** Se desconecta al desmontar
+3. **Actualización de marcadores:** Watch en `lastUpdate` actualiza el mapa
+4. **Indicador visual:** Badge de estado de conexión (🟢/🔴)
+5. **Actualización incremental:** Solo actualiza el dispositivo modificado
+6. **Fallback polling:** Mantiene polling cada 30s como respaldo
+
+**Indicador de Estado:**
+```vue
+<div class="flex items-center gap-2 px-4 py-2 rounded-lg" 
+     :class="isConnected ? 'bg-green-900/30 border border-green-500/30' : 'bg-red-900/30 border border-red-500/30'">
+  <div class="w-2 h-2 rounded-full animate-pulse" 
+       :class="isConnected ? 'bg-green-500' : 'bg-red-500'"></div>
+  <span class="text-sm font-medium" :class="isConnected ? 'text-green-400' : 'text-red-400'">
+    {{ isConnected ? '🟢 Conectado' : '🔴 Desconectado' }}
+  </span>
+</div>
+```
+
+### Uso en Producción
+
+#### Iniciar Servidores (Desarrollo)
+```bash
+# Terminal 1: Servidor WebSocket Reverb (OBLIGATORIO)
+cd C:\Users\Neff_PM\Documents\ChambitasUwU\ReGps\ReGps
+php artisan reverb:start
+
+# Terminal 2: Aplicación Laravel
+cd C:\Users\Neff_PM\Documents\ChambitasUwU\ReGps\ReGps
+php artisan serve
+
+# Terminal 3: Frontend en modo desarrollo (OPCIONAL - solo para desarrollo)
+cd C:\Users\Neff_PM\Documents\ChambitasUwU\ReGps\ReGps
+npm run dev
+```
+
+**⚠️ IMPORTANTE:**
+- **Reverb DEBE estar corriendo** para que funcionen las actualizaciones en tiempo real
+- Si ves error 500 al enviar ubicaciones, verifica que Reverb esté activo en el puerto 8080
+- En producción, usa `pm2` o `supervisor` para mantener Reverb corriendo como servicio
+
+#### Configuración .env
+```env
+BROADCAST_CONNECTION=reverb
+
+REVERB_APP_ID=your-app-id
+REVERB_APP_KEY=your-app-key
+REVERB_APP_SECRET=your-app-secret
+REVERB_HOST="0.0.0.0"
+REVERB_PORT=8080
+REVERB_SCHEME=http
+
+VITE_REVERB_APP_KEY="${REVERB_APP_KEY}"
+VITE_REVERB_HOST="${REVERB_HOST}"
+VITE_REVERB_PORT="${REVERB_PORT}"
+VITE_REVERB_SCHEME="${REVERB_SCHEME}"
+```
+
+### Ventajas del Sistema
+- ⚡ **Latencia ultra-baja:** Actualizaciones instantáneas sin polling
+- 🔋 **Eficiencia:** Reduce carga del servidor eliminando peticiones constantes
+- 📊 **Escalabilidad:** Reverb maneja miles de conexiones simultáneas
+- 🛡️ **Confiabilidad:** Sistema de fallback con polling cada 30s
+- 🎨 **UX mejorada:** Indicador visual de estado de conexión
+- 🔄 **Actualizaciones incrementales:** Solo actualiza dispositivos modificados
+
+### Sistema de Reconexión Inteligente
+
+#### **Indicador Visual Mejorado (3 Estados)**
+
+El Dashboard muestra en tiempo real el estado de la conexión WebSocket:
+
+| Estado | Indicador | Significado | Color |
+|--------|-----------|-------------|-------|
+| **🟢 Conectado en vivo** | Punto verde pulsante | WebSocket activo, recibiendo actualizaciones en tiempo real | Verde |
+| **🔄 Reconectando...** | Punto amarillo girando | Intentando restablecer conexión | Amarillo |
+| **🔴 Sin conexión en tiempo real** | Punto rojo estático | WebSocket desconectado, usando polling fallback | Rojo |
+
+#### **Reconexión Automática**
+
+Laravel Echo maneja la reconexión automáticamente cuando se pierde la conexión:
+
+```typescript
+// Eventos de conexión detectados automáticamente
+window.Echo.connector.pusher.connection.bind('connected', () => {
+  // ✅ Conexión establecida
+  isReconnecting.value = false
+})
+
+window.Echo.connector.pusher.connection.bind('connecting', () => {
+  // 🔄 Intentando reconectar
+  isReconnecting.value = true
+})
+
+window.Echo.connector.pusher.connection.bind('disconnected', () => {
+  // 🔴 Desconectado
+  isReconnecting.value = false
+})
+```
+
+**Comportamiento de reconexión:**
+- ⏱️ Primer intento: Inmediato
+- ⏱️ Reintentos (1-5): Cada 1 segundo
+- ⏱️ Reintentos (6-10): Cada 2 segundos
+- ⏱️ Reintentos (11+): Cada 5 segundos
+- ♾️ Continúa indefinidamente hasta reconectar
+
+#### **Fallback a Polling Inteligente**
+
+Si WebSocket no se puede reconectar, el sistema activa automáticamente un polling de respaldo:
+
+```typescript
+// Detectar desconexión y activar fallback
+watch(isConnected, (connected) => {
+  if (!connected && !pollingInterval) {
+    console.warn('⚠️ WebSocket desconectado, activando polling cada 15 segundos')
+    
+    // Activar polling como respaldo
+    pollingInterval = setInterval(async () => {
+      await refreshLocations()
+    }, 15000)
+    
+  } else if (connected && pollingInterval) {
+    console.log('✅ WebSocket restaurado, desactivando polling fallback')
+    clearInterval(pollingInterval)
+    pollingInterval = null
+  }
+})
+```
+
+**Características del fallback:**
+- ⏰ Se activa automáticamente al perder conexión WebSocket
+- 🔄 Polling cada 15 segundos (más lento que WebSocket pero funcional)
+- 🎯 Se desactiva automáticamente cuando WebSocket se restaura
+- 💾 Garantiza que el Dashboard siempre reciba actualizaciones
+
+#### **Ciclo de Vida de la Conexión**
+
+```mermaid
+graph LR
+    A[Montar Dashboard] --> B[Conectar WebSocket]
+    B --> C{¿Conexión exitosa?}
+    C -->|Sí| D[🟢 Conectado]
+    C -->|No| E[🔄 Reconectando]
+    E --> F{¿Reconecta?}
+    F -->|Sí| D
+    F -->|No después de 3 intentos| G[🔴 Desconectado]
+    G --> H[Activar Polling Fallback]
+    D --> I{¿Se pierde conexión?}
+    I -->|Sí| E
+    H --> J{¿WebSocket vuelve?}
+    J -->|Sí| K[Desactivar Polling]
+    K --> D
+```
+
+#### **Escenarios Comunes**
+
+##### 1. **Internet Lento o Intermitente**
+```
+🟢 Conectado → 🔄 Reconectando → 🟢 Conectado
+```
+- Echo reintenta automáticamente
+- Usuario ve feedback visual del estado
+- Se reconecta sin intervención manual
+
+##### 2. **Reverb Caído**
+```
+🟢 Conectado → 🔄 Reconectando → 🔴 Desconectado → Polling activado
+```
+- Después de varios intentos fallidos
+- Polling cada 15 segundos como respaldo
+- Dashboard sigue funcionando (más lento)
+
+##### 3. **Usuario Sale de Túnel (sin señal)**
+```
+🔴 Desconectado (con polling) → 🔄 Reconectando → 🟢 Conectado
+```
+- Echo detecta que internet volvió
+- Reconecta automáticamente
+- Polling se desactiva automáticamente
+
+#### **Logs de Consola**
+
+Puedes monitorear el estado en la consola del navegador (F12):
+
+```javascript
+// Conexión exitosa
+✅ WebSocket conectado
+
+// Desconexión
+🔴 WebSocket desconectado
+⚠️ WebSocket desconectado, activando polling cada 15 segundos
+
+// Reconexión
+🔄 Intentando reconectar...
+
+// Restauración
+✅ WebSocket conectado
+✅ WebSocket restaurado, desactivando polling fallback
+```
+
+#### **Ventajas del Sistema de Reconexión**
+
+- 🔄 **Automático:** Cero intervención manual
+- 🎯 **Inteligente:** Polling solo cuando es necesario
+- 👁️ **Transparente:** Usuario siempre sabe el estado
+- 🛡️ **Robusto:** Nunca pierde funcionalidad completamente
+- 💰 **Eficiente:** No hace polling innecesario cuando WebSocket funciona
+- 📱 **Mobile-friendly:** Maneja bien conexiones inestables
+
+#### **Troubleshooting**
+
+| Problema | Causa | Solución |
+|----------|-------|----------|
+| 🔴 Siempre desconectado | Reverb no está corriendo | `php artisan reverb:start` |
+| 🔄 Reconectando infinito | Puerto 8080 bloqueado | Verificar firewall |
+| Polling activado siempre | Mismatch de configuración | Verificar `.env` y `app.ts` |
+| No actualiza el mapa | Ambos: WebSocket y API caídos | Verificar backend Laravel |
+
+**Verificación rápida:**
+```bash
+# ¿Reverb está corriendo?
+netstat -an | findstr :8080
+
+# ¿Laravel está corriendo?
+curl http://127.0.0.1:8000/api/locations/current
+```
+
+
 
 ---
 
@@ -190,8 +564,9 @@ ReGPS es un sistema profesional de rastreo GPS en tiempo real desarrollado con:
 
 | Comando | Descripción |
 |---------|-------------|
-| `php artisan serve` | Iniciar servidor de desarrollo |
-| `npm run dev` | Compilar assets en desarrollo |
+| `php artisan reverb:start` | **REQUERIDO:** Iniciar servidor WebSocket (puerto 8080) |
+| `php artisan serve` | Iniciar servidor de desarrollo (puerto 8000) |
+| `npm run dev` | Compilar assets en desarrollo con hot-reload |
 | `npm run build` | Compilar assets para producción |
 | `php artisan queue:work` | Procesar colas |
 | `php artisan schedule:run` | Ejecutar tareas programadas |
@@ -460,4 +835,4 @@ Content-Type: application/json
 - Soporte por correo electrónico
 
 ---
-*Última actualización: 20 de Noviembre de 2025*
+*Última actualización: 27 de Noviembre de 2025*

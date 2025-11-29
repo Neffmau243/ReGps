@@ -66,22 +66,46 @@
               />
             </div>
             
+            <!-- Checkpoint Permanente -->
+            <div v-if="form.TipoZona === 'Checkpoint'" class="bg-dark-100 border border-primary/20 rounded-lg p-4">
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input 
+                  v-model="isPermanent"
+                  type="checkbox" 
+                  class="w-5 h-5 rounded border-primary/30 text-primary focus:ring-primary focus:ring-offset-0 bg-dark cursor-pointer"
+                />
+                <span class="text-gray-300 font-medium">
+                  <i class="bi bi-infinity text-primary mr-2"></i>
+                  Checkpoint Permanente (24/7)
+                </span>
+              </label>
+              <p class="text-gray-400 text-xs mt-2 ml-8">Si está activo, no se requieren horarios</p>
+            </div>
+            
             <!-- Horario -->
-            <div class="grid grid-cols-2 gap-4">
+            <div v-if="!isPermanent" class="grid grid-cols-2 gap-4">
               <div>
-                <label class="label">Hora Inicio</label>
+                <label class="label">
+                  <i class="bi bi-clock-fill"></i>
+                  Hora Inicio
+                </label>
                 <input 
                   v-model="form.HorarioInicio"
                   type="time" 
                   class="input-field"
+                  placeholder="08:00"
                 />
               </div>
               <div>
-                <label class="label">Hora Fin</label>
+                <label class="label">
+                  <i class="bi bi-clock-fill"></i>
+                  Hora Fin
+                </label>
                 <input 
                   v-model="form.HorarioFin"
                   type="time" 
                   class="input-field"
+                  placeholder="18:00"
                 />
               </div>
             </div>
@@ -131,14 +155,17 @@
                 :disabled="!canSubmit || loading"
                 class="btn-primary flex-1"
               >
-                <span v-if="!loading">
-                  {{ isEditing ? 'Actualizar' : 'Crear' }}
+                <span v-if="!loading" class="flex items-center justify-center gap-2">
+                  <i :class="isEditing ? 'bi bi-check-circle-fill' : 'bi bi-plus-circle-fill'"></i>
+                  {{ isEditing ? 'Actualizar Zona' : 'Crear Zona' }}
                 </span>
-                <span v-else>
+                <span v-else class="flex items-center justify-center gap-2">
+                  <i class="bi bi-arrow-repeat animate-spin"></i>
                   Guardando...
                 </span>
               </button>
-              <router-link to="/zonas" class="btn-secondary">
+              <router-link to="/zonas" class="btn-secondary flex items-center justify-center gap-2">
+                <i class="bi bi-x-circle-fill"></i>
                 Cancelar
               </router-link>
             </div>
@@ -150,10 +177,14 @@
           <div class="bg-dark-100 rounded-xl border border-primary/20 overflow-hidden sticky top-8">
             <div class="p-4 border-b border-primary/20">
               <h2 class="text-xl font-bold text-white flex items-center">
+                <i class="bi bi-map-fill mr-2 text-primary"></i>
                 Mapa Interactivo
               </h2>
+              <p class="text-gray-400 text-sm mt-1">
+                {{ form.TipoGeometria === 'Circulo' ? 'Haz clic para colocar el centro' : form.TipoGeometria === 'Poligono' ? 'Haz clic para agregar puntos' : 'Selecciona un tipo de geometría' }}
+              </p>
             </div>
-            <div id="createMap" class="h-[calc(100vh-200px)]"></div>
+            <div id="createMap" class="map-container"></div>
           </div>
         </div>
       </div>
@@ -168,9 +199,18 @@ import api from '@/services/api'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
+// Arreglar el problema de los iconos de Leaflet
+delete (L.Icon.Default.prototype as any)._getIconUrl
+L.Icon.Default.mergeOptions({
+  iconUrl: '/images/marker-icon.png',
+  iconRetinaUrl: '/images/marker-icon-2x.png',
+  shadowUrl: '/images/marker-shadow.png',
+})
+
 const route = useRoute()
 const router = useRouter()
 const isEditing = computed(() => !!route.params.id)
+const isPermanent = ref(false)
 
 const form = ref({
   Nombre: '',
@@ -189,6 +229,7 @@ const form = ref({
 const loading = ref(false)
 let map: L.Map | null = null
 let currentShape: L.Circle | L.Polygon | null = null
+let currentMarker: L.Marker | null = null
 let polygonPoints: L.LatLng[] = []
 
 const canSubmit = computed(() => {
@@ -208,6 +249,8 @@ const canSubmit = computed(() => {
 })
 
 onMounted(async () => {
+  // Dar tiempo para que el DOM se renderice
+  await new Promise(resolve => setTimeout(resolve, 100))
   initMap()
   
   if (isEditing.value) {
@@ -216,11 +259,24 @@ onMounted(async () => {
 })
 
 const initMap = () => {
+  const mapElement = document.getElementById('createMap')
+  if (!mapElement) {
+    console.error('Map element not found')
+    return
+  }
+  
   map = L.map('createMap').setView([form.value.Latitud, form.value.Longitud], 13)
   
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
   }).addTo(map)
+  
+  // Forzar el redimensionamiento del mapa
+  setTimeout(() => {
+    if (map) {
+      map.invalidateSize()
+    }
+  }, 200)
   
   // Map click handler
   map.on('click', handleMapClick)
@@ -238,10 +294,15 @@ const handleMapClick = (e: L.LeafletMouseEvent) => {
 }
 
 const drawCircle = () => {
+  // Eliminar el círculo y marcador anteriores
   if (currentShape) {
     currentShape.remove()
   }
+  if (currentMarker) {
+    currentMarker.remove()
+  }
   
+  // Crear nuevo círculo
   currentShape = L.circle([form.value.Latitud, form.value.Longitud], {
     radius: form.value.Radio,
     color: '#FF6B35',
@@ -249,7 +310,8 @@ const drawCircle = () => {
     fillOpacity: 0.2
   }).addTo(map!)
   
-  L.marker([form.value.Latitud, form.value.Longitud]).addTo(map!)
+  // Crear nuevo marcador
+  currentMarker = L.marker([form.value.Latitud, form.value.Longitud]).addTo(map!)
 }
 
 const drawPolygon = () => {
@@ -321,7 +383,15 @@ const loadZone = async () => {
       }
     }
     
-    map?.setView([zona.Latitud, zona.Longitud], 15)
+    // Centrar el mapa y forzar actualización
+    if (map) {
+      map.setView([zona.Latitud, zona.Longitud], 15)
+      setTimeout(() => {
+        if (map) {
+          map.invalidateSize()
+        }
+      }, 100)
+    }
     
   } catch (error) {
     console.error('Error loading zone:', error)
@@ -335,6 +405,9 @@ const handleSubmit = async () => {
   try {
     const data = {
       ...form.value,
+      // Si es permanente, limpiar los horarios
+      HorarioInicio: isPermanent.value ? null : form.value.HorarioInicio || null,
+      HorarioFin: isPermanent.value ? null : form.value.HorarioFin || null,
       Coordenadas: form.value.Coordenadas ? JSON.stringify(form.value.Coordenadas) : null
     }
     
@@ -347,7 +420,14 @@ const handleSubmit = async () => {
     router.push('/zonas')
   } catch (error: any) {
     console.error('Error saving zone:', error)
-    alert(error.response?.data?.message || 'Error al guardar la zona')
+    const message = error.response?.data?.message || 'Error al guardar la zona'
+    const errors = error.response?.data?.errors
+    if (errors) {
+      const errorMessages = Object.values(errors).flat().join('\\n')
+      alert(`${message}:\\n${errorMessages}`)
+    } else {
+      alert(message)
+    }
   } finally {
     loading.value = false
   }
@@ -355,6 +435,14 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
+.map-container {
+  width: 100%;
+  height: calc(100vh - 250px);
+  min-height: 500px;
+  position: relative;
+  z-index: 1;
+}
+
 .label {
   @apply block text-sm font-medium text-gray-300 mb-2;
 }
@@ -364,10 +452,71 @@ const handleSubmit = async () => {
 }
 
 .btn-primary {
-  @apply px-6 py-2 bg-primary hover:bg-primary-600 text-white font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8C5E 100%);
+  color: white;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 107, 53, 0.4);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-secondary {
-  @apply px-6 py-2 bg-dark border border-primary/20 hover:border-primary text-white rounded-lg transition-all text-center;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-secondary:hover {
+  border-color: rgba(255, 107, 53, 0.5);
+  background: rgba(255, 107, 53, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Asegurar que Leaflet funcione correctamente */
+:deep(.leaflet-container) {
+  width: 100%;
+  height: 100%;
+  background: #1a1a1a;
+}
+
+:deep(.leaflet-tile-pane) {
+  filter: brightness(0.9) contrast(1.1);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 </style>

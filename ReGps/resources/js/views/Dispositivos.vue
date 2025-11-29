@@ -98,17 +98,18 @@
           
           <div class="flex items-center justify-end gap-2 pt-4 border-t border-gray-700">
             <button 
+              @click="viewLocation(dispositivo)"
+              class="action-btn location"
+              title="Ver ubicación"
+            >
+              <i class="bi bi-geo-alt-fill"></i>
+            </button>
+            <button 
               @click="editDevice(dispositivo)"
               class="action-btn edit"
               title="Editar"
             >
               <i class="bi bi-pencil-fill"></i>
-            </button>
-            <button 
-              @click="viewLocation(dispositivo)"
-              class="action-btn toggle"
-              title="Ver ubicación"
-            >
             </button>
             <button 
               @click="deleteDevice(dispositivo.DispositivoID)"
@@ -135,13 +136,16 @@
     </div>
     
     <!-- Create/Edit Modal -->
-    <div v-if="showCreateModal || editingDevice" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div class="bg-dark-100 rounded-xl border border-primary/20 w-full max-w-md">
+    <div v-if="showCreateModal || editingDevice" class="modal-overlay">
+      <div class="modal-container" @click.self="closeModal">
+        <div class="modal-content">
         <div class="p-6 border-b border-primary/20 flex items-center justify-between">
-          <h3 class="text-xl font-bold text-white">
+          <h3 class="text-xl font-bold text-white flex items-center gap-2">
+            <i class="bi" :class="editingDevice ? 'bi-pencil-square' : 'bi-plus-circle-fill'"></i>
             {{ editingDevice ? 'Editar Dispositivo' : 'Nuevo Dispositivo' }}
           </h3>
-          <button @click="closeModal" class="text-gray-400 hover:text-white">
+          <button @click="closeModal" class="text-gray-400 hover:text-white transition-colors">
+            <i class="bi bi-x-lg"></i>
           </button>
         </div>
         
@@ -234,6 +238,7 @@
           </div>
         </form>
       </div>
+    </div>
     </div>
   </div>
 </template>
@@ -427,6 +432,44 @@ const deleteDevice = async (id: number) => {
    DISPOSITIVOS VIEW - CONSISTENT STYLES
    ============================================ */
 
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.90);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.modal-container {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 20px 0;
+}
+
+.modal-content {
+  background: #000000;
+  border: 2px solid rgba(255, 107, 53, 0.3);
+  border-radius: 16px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modal-enter 0.3s ease-out;
+  box-shadow: 0 20px 60px rgba(255, 107, 53, 0.2), 0 0 100px rgba(0, 0, 0, 0.5);
+}
+
 /* Compact Elements */
 .stat-mini {
   display: flex;
@@ -516,60 +559,16 @@ const deleteDevice = async (id: number) => {
   transform: translateY(0);
 }
 
-/* Action Buttons */
-.action-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  border: 1px solid;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 15px;
+/* Action Button - Location variant (specific to Dispositivos) */
+.action-btn.location {
+  color: #FF6B35;
+  border-color: rgba(255, 107, 53, 0.3);
 }
 
-.action-btn:hover {
-  transform: translateY(-3px) scale(1.1);
-}
-
-.action-btn:active {
-  transform: translateY(-1px) scale(1.05);
-}
-
-.action-btn.edit {
-  color: #60a5fa;
-  border-color: rgba(96, 165, 250, 0.3);
-}
-
-.action-btn.edit:hover {
-  background: rgba(96, 165, 250, 0.15);
-  border-color: rgba(96, 165, 250, 0.5);
-  box-shadow: 0 8px 16px rgba(96, 165, 250, 0.3);
-}
-
-.action-btn.toggle {
-  color: #10b981;
-  border-color: rgba(16, 185, 129, 0.3);
-}
-
-.action-btn.toggle:hover {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: rgba(16, 185, 129, 0.5);
-  box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
-}
-
-.action-btn.delete {
-  color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.3);
-}
-
-.action-btn.delete:hover {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.5);
-  box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+.action-btn.location:hover {
+  background: rgba(255, 107, 53, 0.15);
+  border-color: rgba(255, 107, 53, 0.5);
+  box-shadow: 0 8px 16px rgba(255, 107, 53, 0.3);
 }
 
 /* Status Badge */
@@ -642,30 +641,43 @@ const deleteDevice = async (id: number) => {
 .label {
   display: flex;
   align-items: center;
+  gap: 8px;
   font-size: 14px;
   font-weight: 600;
-  color: #d1d5db;
+  color: #e5e7eb;
   margin-bottom: 8px;
+}
+
+.label i {
+  color: #FF6B35;
+  font-size: 16px;
 }
 
 .input-field {
   width: 100%;
   padding: 12px 16px;
-  background: #0f1419;
-  border: 1px solid #374151;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   color: white;
   transition: all 0.3s ease;
+  font-size: 14px;
 }
 
 .input-field:focus {
   outline: none;
-  border-color: #7c3aed;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+  border-color: #FF6B35;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
 }
 
 .input-field:hover {
-  border-color: #4b5563;
+  border-color: rgba(255, 107, 53, 0.3);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.input-field::placeholder {
+  color: #6b7280;
 }
 
 .btn-primary {
@@ -696,8 +708,8 @@ const deleteDevice = async (id: number) => {
 
 .btn-secondary {
   padding: 12px 24px;
-  background: #0f1419;
-  border: 2px solid #374151;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   color: white;
   font-weight: 600;
   border-radius: 12px;
@@ -706,8 +718,9 @@ const deleteDevice = async (id: number) => {
 }
 
 .btn-secondary:hover {
-  border-color: #FF6B35;
-  background: #1a1a2e;
+  border-color: rgba(255, 107, 53, 0.5);
+  background: rgba(255, 107, 53, 0.1);
+  transform: translateY(-1px);
 }
 
 @keyframes spin {
@@ -721,5 +734,20 @@ const deleteDevice = async (id: number) => {
 
 .animate-spin {
   animation: spin 1s linear infinite;
+}
+
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-enter {
+  animation: modal-enter 0.3s ease-out;
 }
 </style>

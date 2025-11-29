@@ -120,7 +120,7 @@
                 <i class="bi bi-check-circle-fill"></i>
               </button>
               <button
-                @click="viewAlertDetails(alerta)"
+                @click="viewDetails(alerta)"
                 class="action-btn"
                 title="Ver detalles"
               >

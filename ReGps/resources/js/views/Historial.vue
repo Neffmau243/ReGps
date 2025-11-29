@@ -157,7 +157,21 @@ interface Dispositivo {
   IMEI: string
 }
 
+interface Zona {
+  ZonaID: number
+  Nombre: string
+  TipoZona: 'Checkpoint' | 'Zona Permitida' | 'Zona Restringida'
+  TipoGeometria: 'Circulo' | 'Poligono'
+  Latitud: number
+  Longitud: number
+  Radio: number
+  Coordenadas: Array<{ lat: number; lng: number }>
+  Estado: 'Activo' | 'Inactivo'
+  Descripcion?: string
+}
+
 const dispositivos = ref<Dispositivo[]>([])
+const zonas = ref<Zona[]>([])
 const filters = ref({
   deviceId: '',
   startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -166,9 +180,11 @@ const filters = ref({
 const historyData = ref<any>(null)
 const loading = ref(false)
 let map: L.Map | null = null
+let zoneShapes: (L.Circle | L.Polygon)[] = []
 
 onMounted(async () => {
   await loadDevices()
+  await loadZones()
 })
 
 const loadDevices = async () => {
@@ -177,6 +193,15 @@ const loadDevices = async () => {
     dispositivos.value = response.data
   } catch (error) {
     console.error('Error loading devices:', error)
+  }
+}
+
+const loadZones = async () => {
+  try {
+    const response = await api.get('/zonas')
+    zonas.value = response.data
+  } catch (error) {
+    console.error('Error loading zones:', error)
   }
 }
 
@@ -200,6 +225,7 @@ const loadHistory = async () => {
     setTimeout(() => {
       initMap()
       drawRoute()
+      drawZones()
     }, 100)
     
   } catch (error) {
@@ -238,7 +264,7 @@ const drawRoute = () => {
     iconSize: [30, 30]
   })
   L.marker([locations[0].latitude, locations[0].longitude], { icon: startIcon })
-    .bindPopup('Fin')
+    .bindPopup('Inicio')
     .addTo(map!)
   
   // Add end marker (GREEN = Fin)
@@ -249,12 +275,104 @@ const drawRoute = () => {
   })
   const lastLoc = locations[locations.length - 1]
   L.marker([lastLoc.latitude, lastLoc.longitude], { icon: endIcon })
-    .bindPopup('Inicio')
+    .bindPopup('Fin')
     .addTo(map!)
   
   // Fit bounds
   const bounds = L.latLngBounds(latlngs)
   map!.fitBounds(bounds, { padding: [50, 50] })
+}
+
+const drawZones = () => {
+  // Clear existing zone shapes
+  zoneShapes.forEach(shape => shape.remove())
+  zoneShapes = []
+  
+  if (!map) return
+  
+  // Add zones to map
+  zonas.value.forEach(zona => {
+    if (zona.Estado !== 'Activo') return
+    
+    let shape: L.Circle | L.Polygon
+    const color = getZoneColor(zona.TipoZona)
+    const fillOpacity = 0.2
+    const weight = 2
+    
+    if (zona.TipoGeometria === 'Circulo' && zona.Latitud && zona.Longitud && zona.Radio) {
+      // Create circle
+      shape = L.circle([zona.Latitud, zona.Longitud], {
+        radius: zona.Radio,
+        color: color,
+        fillColor: color,
+        fillOpacity: fillOpacity,
+        weight: weight
+      })
+    } else if (zona.TipoGeometria === 'Poligono' && zona.Coordenadas && zona.Coordenadas.length >= 3) {
+      // Create polygon
+      const latLngs: [number, number][] = zona.Coordenadas.map(coord => [coord.lat, coord.lng])
+      shape = L.polygon(latLngs, {
+        color: color,
+        fillColor: color,
+        fillOpacity: fillOpacity,
+        weight: weight
+      })
+    } else {
+      return // Skip invalid zones
+    }
+    
+    // Add popup with zone info
+    const icon = getZoneIcon(zona.TipoZona)
+    const popupContent = `
+      <div style="min-width: 200px;">
+        <div style="font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #1a1a1a;">
+          ${icon} ${zona.Nombre}
+        </div>
+        <div style="font-size: 12px; color: #666; margin-bottom: 3px;">
+          <strong>Tipo:</strong> ${zona.TipoZona}
+        </div>
+        <div style="font-size: 12px; color: #666; margin-bottom: 3px;">
+          <strong>Geometría:</strong> ${zona.TipoGeometria}
+          ${zona.TipoGeometria === 'Circulo' ? ` (${zona.Radio}m)` : ''}
+        </div>
+        ${zona.Descripcion ? `
+          <div style="font-size: 12px; color: #666; margin-top: 5px; padding-top: 5px; border-top: 1px solid #eee;">
+            ${zona.Descripcion}
+          </div>
+        ` : ''}
+      </div>
+    `
+    
+    shape.bindPopup(popupContent)
+    shape.addTo(map!)
+    zoneShapes.push(shape)
+  })
+}
+
+const getZoneColor = (tipoZona: string): string => {
+  switch (tipoZona) {
+    case 'Checkpoint':
+      return '#3b82f6' // Blue
+    case 'Zona Permitida':
+      return '#10b981' // Green
+    case 'Zona Restringida':
+      return '#ef4444' // Red
+    default:
+      return '#6b7280' // Gray
+  }
+}
+
+const getZoneIcon = (tipoZona: string): string => {
+  switch (tipoZona) {
+    case 'Checkpoint':
+      return '📍'
+    case 'Zona Permitida':
+      return '✅'
+    case 'Zona Restringida':
+      return '🚫'
+    default:
+      return '📌'
+  }
 }
 
 const formatTime = (timestamp: string) => {
